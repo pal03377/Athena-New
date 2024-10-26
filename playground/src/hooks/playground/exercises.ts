@@ -17,9 +17,9 @@ export async function fetchExercisesEager(dataMode: DataMode) {
 }
 
 export async function fetchExpertEvaluationExercisesEager(
-     dataMode: DataMode,
-    expertEvaluationId: string
-   ) {
+  dataMode: DataMode,
+  expertEvaluationId: string
+) {
 
   const response = await fetch(`${baseUrl}/api/data/${dataMode}/expert_evaluation/${expertEvaluationId}/exercises`);
   return await response.json() as Promise<Exercise[]>;

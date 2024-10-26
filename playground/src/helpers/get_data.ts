@@ -1,16 +1,16 @@
-import type {Exercise} from "@/model/exercise";
-import type {Submission} from "@/model/submission";
-import type {CategorizedFeedback, Feedback} from "@/model/feedback";
-import type {DataMode} from "@/model/data_mode";
+import type { Exercise } from "@/model/exercise";
+import type { Submission } from "@/model/submission";
+import type { CategorizedFeedback, Feedback } from "@/model/feedback";
+import type { DataMode } from "@/model/data_mode";
 
 import path from "path";
 import fs from "fs";
 
 import baseUrl from "@/helpers/base_url";
-import {Metric} from "@/model/metric";
-import {ExpertEvaluationProgress} from "@/model/expert_evaluation_progress";
-import {ExpertEvaluationConfig} from "@/model/expert_evaluation_config";
-import {v4 as uuidv4} from "uuid";
+import { Metric } from "@/model/metric";
+import { ExpertEvaluationProgress } from "@/model/expert_evaluation_progress";
+import { ExpertEvaluationConfig } from "@/model/expert_evaluation_config";
+import { v4 as uuidv4 } from "uuid";
 
 /**
  * Splits the given data mode into its parts.
@@ -267,7 +267,7 @@ export function addStructuredGradingInstructionsToFeedback(
                     }
                 });
                 submission.feedbacks = processedFeedbacks;
-    }
+            }
         }
     }
 }
@@ -301,7 +301,7 @@ function jsonToFeedbacks(json: any): Feedback[] {
     });
 }
 
-function jsonToMetrics(json: any): Metric [] {
+function jsonToMetrics(json: any): Metric[] {
     return json.metrics;
 }
 
@@ -389,7 +389,7 @@ export function anonymizeFeedbackCategoriesAndShuffle(
                     // Iterate over each feedback category and anonymize the category names
                     Object.keys(feedback).forEach((originalCategory) => {
                         const anonymizedCategory = uuidv4();
-                        mappings[anonymizedCategory] =  originalCategory;
+                        mappings[anonymizedCategory] = originalCategory;
 
                         anonymizedFeedback[anonymizedCategory] = feedback[originalCategory];
                     });
@@ -434,7 +434,7 @@ export function saveConfigToFileSync(
 
     // Create parent directory
     if (!fs.existsSync(dirPath)) {
-        fs.mkdirSync(dirPath, {recursive: true});
+        fs.mkdirSync(dirPath, { recursive: true });
     }
 
     if (expertEvaluation.expertIds) {
@@ -519,7 +519,7 @@ export function getAnonymizedConfigFromFileSync(
 
 export function getAllConfigsFromFilesSync(
     dataMode: DataMode,
-): ExpertEvaluationConfig [] {
+): ExpertEvaluationConfig[] {
 
     const configPath = path.join(
         process.cwd(),
