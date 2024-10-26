@@ -1,11 +1,11 @@
-import {useEffect, useState} from "react";
-import {v4 as uuidv4} from "uuid";
-import {downloadJSONFile} from "@/helpers/download";
-import {twMerge} from "tailwind-merge";
+import { useEffect, useState } from "react";
+import { v4 as uuidv4 } from "uuid";
+import { downloadJSONFile } from "@/helpers/download";
+import { twMerge } from "tailwind-merge";
 import MetricsForm from "@/components/view_mode/evaluation_mode/expert_evaluation/metrics_form";
-import {Exercise} from "@/model/exercise";
-import {ExpertEvaluationConfig} from "@/model/expert_evaluation_config";
-import {Metric} from "@/model/metric";
+import { Exercise } from "@/model/exercise";
+import { ExpertEvaluationConfig } from "@/model/expert_evaluation_config";
+import { Metric } from "@/model/metric";
 import EvaluationConfigSelector from "@/components/selectors/evaluation_config_selector";
 import {
   EvaluationManagementExportImport
@@ -16,33 +16,33 @@ import {
 } from "@/hooks/playground/expert_evaluation_config";
 import ExpertLinks from "@/components/view_mode/evaluation_mode/expert_evaluation/expert_links";
 import ExerciseImport from "@/components/view_mode/evaluation_mode/expert_evaluation/exercise_import";
+import useDownloadExpertEvaluationData from "@/hooks/playground/expert_evaluation";
 
 
 export default function EvaluationManagement() {
   const [expertEvaluationConfigs, setExpertEvaluationConfigs] = useState<ExpertEvaluationConfig[]>([]);
   const [selectedConfigId, setSelectedConfigId] = useState<string>("new");
   const [name, setName] = useState<string>("");
-  const [started, setStarted] = useState<boolean>(false); // This controls if the experiment is locked or not
+  const [started, setStarted] = useState<boolean>(false); // Controls if the experiment is locked
   const [creationDate, setCreationDate] = useState<Date | undefined>(undefined);
   const [metrics, setMetrics] = useState<Metric[]>([]);
   const [exercises, setExercises] = useState<Exercise[]>([]);
   const [expertIds, setExpertIds] = useState<string[]>([]);
-
+  const [secret, setSecret] = useState<string>("");
+  const [isSecretValid, setIsSecretValid] = useState<boolean>(true);
   const dataMode = 'expert_evaluation';
 
   useEffect(() => {
     const fetchData = async () => {
-    console.log("upon loading page?");
-
-    const savedConfigs = await fetchAllExpertEvaluationConfigs(dataMode);
-    setExpertEvaluationConfigs(savedConfigs);
-  };
-  fetchData();
+      const savedConfigs = await fetchAllExpertEvaluationConfigs(dataMode);
+      setExpertEvaluationConfigs(savedConfigs);
+    };
+    fetchData();
   }, []);
 
   useEffect(() => {
     if (selectedConfigId === "new") {
-      setSelectedConfigId(uuidv4())
+      setSelectedConfigId(uuidv4());
       setName("");
       setStarted(false);
       setCreationDate(new Date());
@@ -66,7 +66,7 @@ export default function EvaluationManagement() {
   const getSelectedConfig = (): ExpertEvaluationConfig => {
     if (selectedConfigId === "new") {
       return {
-        started: started,
+        started,
         creationDate: creationDate || new Date(),
         type: "evaluation_config",
         id: uuidv4(),
@@ -76,16 +76,18 @@ export default function EvaluationManagement() {
         expertIds,
       };
     } else {
-      return (expertEvaluationConfigs.find((config) => config.id === selectedConfigId) || {
-        started: false,
-        creationDate: new Date(),
-        type: "evaluation_config",
-        id: uuidv4(),
-        name: "",
-        metrics: [],
-        exercises: [],
-        expertIds: [],
-      });
+      return (
+        expertEvaluationConfigs.find((config) => config.id === selectedConfigId) || {
+          started: false,
+          creationDate: new Date(),
+          type: "evaluation_config",
+          id: uuidv4(),
+          name: "",
+          metrics: [],
+          exercises: [],
+          expertIds: [],
+        }
+      );
     }
   };
 
@@ -127,21 +129,37 @@ export default function EvaluationManagement() {
     saveExpertEvaluationConfig(importedConfig);
   };
 
-  const handleExerciseImport = async (fileContent: string) => {
-    const importedExercise = JSON.parse(fileContent) as Exercise;
-    setExercises([...exercises, importedExercise]);
-  }
+  const { mutate: downloadEvaluationData, isLoading: isExporting } = useDownloadExpertEvaluationData({
+    onSuccess: (blob: Blob) => {
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.style.display = "none";
+      a.href = url;
+      a.download = `evaluation_${selectedConfigId}.zip`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+    },
+    onError: (error: { status: number; message: any; }) => {
+      if (error.status === 401) {
+        setIsSecretValid(false);
+      } else {
+        console.error("Download failed:", error.message);
+        alert("An error occurred during download. Please try again later.");
+      }
+    },
+  });
 
   const startEvaluation = () => {
     if (confirm("Are you sure you want to start the evaluation? Once started, no further changes can be made to the configuration!")) {
       setStarted(true);
-      saveExpertEvaluationConfig({...definedExpertEvaluationConfig, started: true});
+      saveExpertEvaluationConfig({ ...definedExpertEvaluationConfig, started: true });
     }
   };
 
   const inputDisabledStyle = started
     ? "bg-gray-100 text-gray-500 cursor-not-allowed"
-    : "";  // Style for disabled input fields
+    : "";
 
   return (
     <div className="bg-white rounded-md p-4 mb-8 space-y-4">
@@ -164,14 +182,14 @@ export default function EvaluationManagement() {
         <span className="text-lg font-bold mb-2">Evaluation Name</span>
         <input
           type="text"
-          placeholder="Insert Evaluation Name"
+          placeholder="Enter a name for the evaluation."
           className={`border border-gray-300 rounded-md p-2 ${inputDisabledStyle}`}
           value={name}
           onChange={(e) => {
-            if (!started) {  // Prevent changes if the experiment has started
+            if (!started) {
               setName(e.target.value);
               if (selectedConfigId !== "new") {
-                saveExpertEvaluationConfig({...definedExpertEvaluationConfig, name: e.target.value});
+                saveExpertEvaluationConfig({ ...definedExpertEvaluationConfig, name: e.target.value });
               }
             }
           }}
@@ -182,10 +200,10 @@ export default function EvaluationManagement() {
       <ExerciseImport
         exercises={exercises}
         setExercises={(newExercises: Exercise[]) => {
-          if (!started) {  // Prevent changes if the experiment has started
+          if (!started) {
             setExercises(newExercises);
             if (selectedConfigId !== "new") {
-              saveExpertEvaluationConfig({...definedExpertEvaluationConfig, exercises: newExercises});
+              saveExpertEvaluationConfig({ ...definedExpertEvaluationConfig, exercises: newExercises });
             }
           }
         }}
@@ -195,10 +213,10 @@ export default function EvaluationManagement() {
       <MetricsForm
         metrics={metrics}
         setMetrics={(newMetrics) => {
-          if (!started) {  // Prevent changes if the experiment has started
+          if (!started) {
             setMetrics(newMetrics);
             if (selectedConfigId !== "new") {
-              saveExpertEvaluationConfig({...definedExpertEvaluationConfig, metrics: newMetrics});
+              saveExpertEvaluationConfig({ ...definedExpertEvaluationConfig, metrics: newMetrics });
             }
           }
         }}
@@ -210,14 +228,41 @@ export default function EvaluationManagement() {
         setExpertIds={(newExpertIds) => {
           setExpertIds(newExpertIds);
           if (selectedConfigId !== "new") {
-            saveExpertEvaluationConfig({...definedExpertEvaluationConfig, expertIds: newExpertIds});
+            saveExpertEvaluationConfig({ ...definedExpertEvaluationConfig, expertIds: newExpertIds });
           }
-        }
-        }
+        }}
         started={started}
         configId={selectedConfigId}
       />
 
+      {started && (
+        <>
+          <label className="flex flex-col">
+            <span className="text-lg font-bold mb-2">Playground Secret</span>
+            <input
+              type="text"
+              placeholder="Enter the playground secret to download the evaluation data."
+              className={`border ${isSecretValid ? "border-gray-300" : "border-red-500"} rounded-md p-2`}
+              value={secret}
+              onChange={(e) => {
+                setSecret(e.target.value);
+                setIsSecretValid(true);
+              }}
+            />
+            {!isSecretValid && (
+              <span className="text-xs text-red-500 mt-1">The secret is incorrect, please try again!</span>
+            )}
+          </label>
+
+          <button
+            className="bg-blue-500 text-white rounded-md p-2 mt-2 hover:bg-blue-600"
+            onClick={() => downloadEvaluationData({ configId: selectedConfigId, secret })}
+            disabled={isExporting}
+          >
+            {isExporting ? "Downloading..." : "Download Results"}
+          </button>
+        </>
+      )}
 
       {!started && (
         <div className="flex flex-row gap-2">
@@ -233,26 +278,10 @@ export default function EvaluationManagement() {
                 saveExpertEvaluationConfig(definedExpertEvaluationConfig);
               }
             }}
-            disabled={!definedExpertEvaluationConfig}  // Disable if no config is defined
+            disabled={!definedExpertEvaluationConfig}
           >
             {selectedConfigId === "new" ? "Define Experiment" : "Save Changes"}
           </button>
-
-          {selectedConfigId !== "new" && (
-            <button
-              className="bg-red-500 text-white rounded-md p-2 mt-2 hover:bg-red-600"
-              onClick={() => {
-                if (confirm("Cancel evaluation?")) {
-                  setExpertEvaluationConfigs((prevConfigs) =>
-                    prevConfigs.filter((config) => config.id !== selectedConfigId)
-                  );
-                  setSelectedConfigId("new");
-                }
-              }}
-            >
-              Cancel
-            </button>
-          )}
 
           <button
             className="bg-green-500 text-white rounded-md p-2 mt-2 hover:bg-green-600 disabled:bg-gray-300 disabled:text-gray-600 disabled:cursor-not-allowed"
@@ -261,7 +290,6 @@ export default function EvaluationManagement() {
           >
             Start Evaluation
           </button>
-
         </div>
       )}
     </div>

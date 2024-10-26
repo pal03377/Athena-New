@@ -190,7 +190,7 @@ export default function MetricsForm({ metrics, setMetrics, disabled }: MetricsFo
                   value={newMetric.title}
                   onChange={(e) => handleChange(e, false)}
                   className={`mt-1 block w-full border border-gray-300 rounded-md p-2 ${inputDisabledStyle}`}
-                  placeholder="Enter a title for the metric"
+                  placeholder="Enter a title for the new metric."
                   disabled={disabled}
                 />
               </label>
@@ -205,7 +205,7 @@ export default function MetricsForm({ metrics, setMetrics, disabled }: MetricsFo
                   value={newMetric.summary}
                   onChange={(e) => handleChange(e, false)}
                   className={`mt-1 block w-full border border-gray-300 rounded-md p-2 ${inputDisabledStyle}`}
-                  placeholder="Enter a short question that the expert can agree or disagree with."
+                  placeholder="Enter a short statement that the expert can agree or disagree with."
                   disabled={disabled}
                 />
               </label>
