@@ -94,9 +94,11 @@ export default function EvaluationManagement() {
       alert("Invalid config type");
       return;
     }
-    const newConfig = createNewEvaluationConfig(importedConfig.name);
-    setSelectedConfig({ ...newConfig, ...importedConfig });
-    setHasUnsavedChanges(true);
+    importedConfig.id = "new";
+    importedConfig.creationDate = new Date();
+    importedConfig.started = false;
+    importedConfig.expertIds = [];
+    setSelectedConfig(importedConfig);
   };
 
   const { mutate: downloadEvaluationData, isLoading: isExporting } = useDownloadExpertEvaluationData({
@@ -248,16 +250,16 @@ export default function EvaluationManagement() {
             {isExporting ? "Downloading..." : "Download Results"}
           </button>
         )}
-      </div>
 
-      {selectedConfig.id !== "new" && !selectedConfig.started && (
-        <button
-          className="bg-green-500 text-white rounded-md p-2 mt-2 hover:bg-green-600"
-          onClick={startEvaluation}
-        >
-          Start Evaluation
-        </button>
-      )}
+        {selectedConfig.id !== "new" && !selectedConfig.started && (
+          <button
+            className="bg-green-500 text-white rounded-md p-2 hover:bg-green-600"
+            onClick={startEvaluation}
+          >
+            Start Evaluation
+          </button>
+        )}
+      </div>
     </div>
   );
 }

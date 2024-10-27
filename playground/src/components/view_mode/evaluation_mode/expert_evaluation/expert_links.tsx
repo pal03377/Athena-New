@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck, faCopy, faPlus, faSyncAlt, faTrash } from '@fortawesome/free-solid-svg-icons';
 import baseUrl from '@/helpers/base_url';
 import { fetchExpertEvaluationProgressStats } from '@/hooks/playground/expert_evaluation_progress_stats';
+import { ExpertEvaluationProgressStats } from "@/model/expert_evaluation_progress_stats";
 
 type ExpertLinksProps = {
   expertIds: string[];
@@ -15,7 +16,7 @@ type ExpertLinksProps = {
 export default function ExpertLinks(props: ExpertLinksProps) {
   const { expertIds, setExpertIds, started, configId } = props;
   const [copiedLink, setCopiedLink] = useState<string | null>(null);
-  const [progressStats, setProgressStats] = useState<Record<string, number> | null>(null);
+  const [progressStats, setProgressStats] = useState<ExpertEvaluationProgressStats>();
   const [loading, setLoading] = useState(false);
 
   // Fetch progress stats with a minimum delay for feedback
@@ -117,7 +118,7 @@ export default function ExpertLinks(props: ExpertLinksProps) {
                       <div className="bg-blue-500 h-2 rounded" style={{ width: `${progressPercentage}%` }} />
                     </div>
                     <span className="text-sm text-gray-700">
-                      {completed} / {total} completed
+                      {completed === 0 ? 'Not started' : `${completed} / ${total} completed`}
                     </span>
                   </>
                 )}

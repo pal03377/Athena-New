@@ -229,7 +229,7 @@ export default function MetricsForm({ metrics, setMetrics, disabled }: MetricsFo
             <div className="flex gap-2">
               <button
                 onClick={addMetric}
-                className={`bg-green-600 text-white rounded-md p-2 hover:bg-green-700 flex items-center gap-2 ${buttonDisabledStyle}`}
+                className={`bg-green-500 text-white rounded-md p-2 hover:bg-green-600 flex items-center gap-2 ${buttonDisabledStyle}`}
               >
                 <FontAwesomeIcon icon={faPlus} />
                 Add Metric
