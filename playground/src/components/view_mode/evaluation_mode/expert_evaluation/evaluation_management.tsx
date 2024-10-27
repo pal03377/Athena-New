@@ -121,7 +121,7 @@ export default function EvaluationManagement() {
   });
 
   const startEvaluation = () => {
-    if (confirm("Are you sure you want to start the evaluation? Once started, no further changes can be made to the configuration!")) {
+    if (confirm("Are you sure you want to start the evaluation? Once started, you can add new expert links but no other changes can be made to the configuration!")) {
       updateSelectedConfig({ started: true });
     }
   };
