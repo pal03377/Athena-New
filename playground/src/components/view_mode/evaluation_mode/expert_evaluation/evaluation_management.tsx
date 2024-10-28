@@ -55,7 +55,7 @@ export default function EvaluationManagement() {
     setHasUnsavedChanges(false);
   };
 
-  const updateSelectedConfig = (updatedFields: Partial<ExpertEvaluationConfig>) => {
+  const updateSelectedConfig = (updatedFields: Partial<ExpertEvaluationConfig>): ExpertEvaluationConfig => {
     const isUpdatingOnlyExpertIds =
       Object.keys(updatedFields).length === 1 && updatedFields.hasOwnProperty('expertIds');
     const newConfig = { ...selectedConfig, ...updatedFields };
@@ -64,25 +64,27 @@ export default function EvaluationManagement() {
       setSelectedConfig(newConfig);
       setHasUnsavedChanges(true);
     }
+
+    return newConfig;
   };
 
-  const saveExpertEvaluationConfig = () => {
-    const newConfig = selectedConfig.id === "new" ? { ...selectedConfig, id: uuidv4() } : selectedConfig;
-    setExpertEvaluationConfigs((prevConfigs) => {
-      const existingIndex = prevConfigs.findIndex((config) => config.id === newConfig.id);
-      if (existingIndex !== -1) {
-        const updatedConfigs = [...prevConfigs];
-        updatedConfigs[existingIndex] = newConfig;
-        return updatedConfigs;
-      } else {
-        return [...prevConfigs, newConfig];
-      }
-    });
+const saveExpertEvaluationConfig = (configToSave = selectedConfig) => {
+  const newConfig = configToSave.id === "new" ? { ...configToSave, id: uuidv4() } : configToSave;
+  setExpertEvaluationConfigs((prevConfigs) => {
+    const existingIndex = prevConfigs.findIndex((config) => config.id === newConfig.id);
+    if (existingIndex !== -1) {
+      const updatedConfigs = [...prevConfigs];
+      updatedConfigs[existingIndex] = newConfig;
+      return updatedConfigs;
+    } else {
+      return [...prevConfigs, newConfig];
+    }
+  });
 
-    setSelectedConfig(newConfig);
-    externalSaveExpertEvaluationConfig(dataMode, newConfig);
-    setHasUnsavedChanges(false);
-  };
+  setSelectedConfig(newConfig);
+  externalSaveExpertEvaluationConfig(dataMode, newConfig);
+  setHasUnsavedChanges(false);
+};
 
   const handleExport = () => {
     downloadJSONFile(`evaluation_config_${selectedConfig.name}_${selectedConfig.id}`, selectedConfig);
@@ -124,7 +126,8 @@ export default function EvaluationManagement() {
 
   const startEvaluation = () => {
     if (confirm("Are you sure you want to start the evaluation? Once started, you can add new expert links but no other changes can be made to the configuration!")) {
-      updateSelectedConfig({ started: true });
+      const updatedConfig = updateSelectedConfig({ started: true });
+      saveExpertEvaluationConfig(updatedConfig);
     }
   };
 
@@ -218,7 +221,7 @@ export default function EvaluationManagement() {
             "text-white rounded-md p-2",
             !hasUnsavedChanges ? "opacity-60 cursor-not-allowed" : ""
           )}
-          onClick={saveExpertEvaluationConfig}
+          onClick={() => saveExpertEvaluationConfig(selectedConfig)}
           disabled={!hasUnsavedChanges}
         >
           {selectedConfig.id === "new" ? "Define Experiment" : "Save Changes"}

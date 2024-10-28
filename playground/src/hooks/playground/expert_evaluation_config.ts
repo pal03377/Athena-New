@@ -7,6 +7,8 @@ import { DataMode } from "@/model/data_mode";
 export async function saveExpertEvaluationConfig(
     dataMode: DataMode,
     config: ExpertEvaluationConfig) {
+    //alert("In saveExperimentEvaluationConfig " + config.started);
+    console.log("In saveExperimentEvaluationConfig " + config.started);
 
     const response = await fetch(`${baseUrl}/api/data/${dataMode}/expert_evaluation/${config.id}/config`, {
         method: 'POST',

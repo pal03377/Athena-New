@@ -508,7 +508,6 @@ export function getProgressFromFileSync(
     return undefined;
   }
 
-  //TODO error handling?
   return JSON.parse(fs.readFileSync(progressPath, "utf8"));
 }
 

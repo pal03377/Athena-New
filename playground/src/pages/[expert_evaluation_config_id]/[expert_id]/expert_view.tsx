@@ -42,6 +42,7 @@ function SideBySideExpertView() {
                             setExercises(config.exercises);
                             setMetrics(config.metrics);
                             setEvaluationStarted(config.started);
+                            alert("Config started: " + config.started);
 
                         } catch
                             (error) {
@@ -75,12 +76,6 @@ function SideBySideExpertView() {
             setSubmissionsLength(total_submissions);
         }
     }, [exercises, metrics]);
-
-    useEffect(() => {
-        if (currentSubmissionIndex > 0) {
-            saveProgress();
-        }
-    }, [currentSubmissionIndex]);
 
 
     const handleNext = () => {
@@ -119,6 +114,19 @@ function SideBySideExpertView() {
         }
     };
 
+    const handleWelcomeClose = () => {
+        alert("in handle welcome close");
+        setHasStartedEvaluating(false); // Set evaluation as started
+        //saveProgress(); // Save progress
+        window.close();
+    };
+
+    const handleRestart = () => {
+        // This will reload the page or reset the evaluation state
+        handlePrevious();
+        window.location.reload();
+    };
+
     const saveProgress = () => {
         if (expert_evaluation_config_id && expert_id) {
             setHasStartedEvaluating(true);
@@ -132,31 +140,7 @@ function SideBySideExpertView() {
         }
     }
 
-    
-    const handleWelcomeClose = () => {
-        alert("in handle welcome close");
-        setHasStartedEvaluating(false); // Set evaluation as started
-        //saveProgress(); // Save progress
-        window.close();
-    };
-
-    if (hasStartedEvaluating) { //TODO add !
-        console.error("true :(");
-        return <WelcomeScreen onClose={handleWelcomeClose}/>;
-    }
-
-    const handleRestart = () => {
-        // This will reload the page or reset the evaluation state
-        handlePrevious();
-        window.location.reload();
-    };
-
-     if (isFinishedEvaluating) {
-        return <CongratulationScreen onRestart={handleRestart}/>;
-    }
-
-
-    const handleLikertValueChange = (feedbackType: string, metricId: string, value: number) => {
+        const handleLikertValueChange = (feedbackType: string, metricId: string, value: number) => {
         const exerciseId = currentExercise.id.toString();
         let submissionId = "";
         if (currentExercise.submissions) {
@@ -184,16 +168,23 @@ function SideBySideExpertView() {
         </div>;
     }
 
-    if (!evaluationStarted) {
-        return <div className={"bg-white p-6 text-red-60"}>The expert evaluation (id={expert_evaluation_config_id}) has
-            not yet
-            started.</div>;
-    }
-
     if (!currentSubmissionIndex && !currentExerciseIndex && !selectedValues) {
         return <div className={"bg-white p-6 text-red-600"}>
             Could not find expert (id={expert_id}) belonging to expert evaluation (id={expert_evaluation_config_id}).
         </div>;
+    }
+
+    if (!evaluationStarted) {
+        return <div className={"bg-white p-6 text-red-60"}>The expert evaluation (id={expert_evaluation_config_id}) has
+            not yet started.</div>;
+    }
+
+    if (!hasStartedEvaluating) {
+        return <WelcomeScreen onClose={handleWelcomeClose}/>;
+    }
+
+    if (isFinishedEvaluating) {
+        return <CongratulationScreen onRestart={handleRestart}/>;
     }
 
     const currentExercise = exercises[currentExerciseIndex];
