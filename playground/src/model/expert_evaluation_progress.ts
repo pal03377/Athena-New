@@ -6,7 +6,7 @@ export type ExpertEvaluationProgress = {
     [exerciseId: string]: { // Group by exercise ID
       [submissionId: string]: { // Group by submission ID within each exercise
         [feedbackType: string]: { // Group by feedback type
-          [metricTitle: string]: number; // Store metric Likert scale values for each feedback type
+          [metricId: string]: number; // Store metric Likert scale values for each feedback type
         };
       };
     };

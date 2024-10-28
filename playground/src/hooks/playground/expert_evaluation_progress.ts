@@ -1,12 +1,12 @@
-import {DataMode} from "@/model/data_mode";
+import { DataMode } from "@/model/data_mode";
 import baseUrl from "@/helpers/base_url";
-import {ExpertEvaluationProgress} from "@/model/expert_evaluation_progress";
+import { ExpertEvaluationProgress } from "@/model/expert_evaluation_progress";
 
 export async function saveExpertEvaluationProgress(
-    dataMode: DataMode,
-    expertEvaluationId: string,
-    expertId: string,
-    progress: ExpertEvaluationProgress) {
+  dataMode: DataMode,
+  expertEvaluationId: string,
+  expertId: string,
+  progress: ExpertEvaluationProgress) {
   const response = await fetch(`${baseUrl}/api/data/${dataMode}/expert_evaluation/${expertEvaluationId}/${expertId}/progress`, {
     method: 'POST',
     headers: {
@@ -19,11 +19,11 @@ export async function saveExpertEvaluationProgress(
 }
 
 export async function fetchExpertEvaluationProgress(
-    dataMode: DataMode,
-    expertEvaluationId: string,
-    expertId: string,
+  dataMode: DataMode,
+  expertEvaluationId: string,
+  expertId: string,
 ) {
-    const response = await fetch(`${baseUrl}/api/data/${dataMode}/expert_evaluation/${expertEvaluationId}/${expertId}/progress`);
+  const response = await fetch(`${baseUrl}/api/data/${dataMode}/expert_evaluation/${expertEvaluationId}/${expertId}/progress`);
 
-    return await response.json() as Promise<ExpertEvaluationProgress>;
+  return await response.json() as Promise<ExpertEvaluationProgress>;
 }

@@ -99,6 +99,11 @@ function SideBySideExpertView() {
         }
     };
 
+    useEffect(() => {
+        if (currentSubmissionIndex > 0) {
+            saveProgress();
+        }
+    }, [currentSubmissionIndex]);
 
     const handlePrevious = () => {
         // If we are not at the first submission, just decrement the submission index
@@ -127,6 +132,7 @@ function SideBySideExpertView() {
         }
     }
 
+    
     const handleWelcomeClose = () => {
         alert("in handle welcome close");
         setHasStartedEvaluating(false); // Set evaluation as started
@@ -150,7 +156,7 @@ function SideBySideExpertView() {
     }
 
 
-    const handleLikertValueChange = (feedbackType: string, metricTitle: string, value: number) => {
+    const handleLikertValueChange = (feedbackType: string, metricId: string, value: number) => {
         const exerciseId = currentExercise.id.toString();
         let submissionId = "";
         if (currentExercise.submissions) {
@@ -165,7 +171,7 @@ function SideBySideExpertView() {
                     ...prevValues[exerciseId]?.[submissionId],
                     [feedbackType]: {
                         ...prevValues[exerciseId]?.[submissionId]?.[feedbackType],
-                        [metricTitle]: value
+                        [metricId]: value
                     }
                 }
             }
@@ -193,7 +199,6 @@ function SideBySideExpertView() {
     const currentExercise = exercises[currentExerciseIndex];
     const currentSubmission = currentExercise?.submissions?.[currentSubmissionIndex];
     const globalSubmissionIndex = exercises.slice(0, currentExerciseIndex).reduce((sum, exercise) => sum + exercise.submissions!.length, 0) + currentSubmissionIndex;
-
 
     if (currentExercise && currentSubmission && currentSubmission.feedbacks) {
         return (

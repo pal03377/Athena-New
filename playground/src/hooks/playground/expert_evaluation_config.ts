@@ -1,7 +1,7 @@
-import {useMutation, UseMutationOptions} from "react-query";
+import { useMutation, UseMutationOptions } from "react-query";
 import baseUrl from "@/helpers/base_url";
-import {ExpertEvaluationConfig} from "@/model/expert_evaluation_config";
-import {DataMode} from "@/model/data_mode";
+import { ExpertEvaluationConfig } from "@/model/expert_evaluation_config";
+import { DataMode } from "@/model/data_mode";
 
 /** Saves a new or existing expert evaluation config to the server */
 export async function saveExpertEvaluationConfig(
@@ -10,7 +10,7 @@ export async function saveExpertEvaluationConfig(
 
     const response = await fetch(`${baseUrl}/api/data/${dataMode}/expert_evaluation/${config.id}/config`, {
         method: 'POST',
-        headers: {"Content-Type": "application/json"},
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(config),
     });
 

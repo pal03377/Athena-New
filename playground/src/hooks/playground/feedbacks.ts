@@ -1,11 +1,11 @@
-import type {CategorizedFeedback, Feedback} from "@/model/feedback";
-import type {Submission} from "@/model/submission";
-import type {Exercise} from "@/model/exercise";
-import type {DataMode} from "@/model/data_mode";
+import type { Feedback } from "@/model/feedback";
+import type { Submission } from "@/model/submission";
+import type { Exercise } from "@/model/exercise";
+import type { DataMode } from "@/model/data_mode";
 
-import {useQuery, UseQueryOptions} from "react-query";
+import { useQuery, UseQueryOptions } from "react-query";
 import baseUrl from "@/helpers/base_url";
-import {useBaseInfo} from "@/hooks/base_info_context";
+import { useBaseInfo } from "@/hooks/base_info_context";
 
 export async function fetchFeedbacks(
     exercise: Exercise | undefined,
@@ -44,7 +44,7 @@ export default function useFeedbacks(
     submission?: Submission,
     options: Omit<UseQueryOptions<Feedback[], Error, Feedback[]>, 'queryFn'> = {}
 ) {
-    const {dataMode} = useBaseInfo();
+    const { dataMode } = useBaseInfo();
 
     return useQuery({
         queryKey: ["feedbacks", dataMode, exercise?.id, submission?.id],

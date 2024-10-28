@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { v4 as uuidv4 } from 'uuid'; // Import the uuid function
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit, faPlus, faSave, faTrash } from "@fortawesome/free-solid-svg-icons";
 import ReactMarkdown from 'react-markdown';
@@ -14,11 +15,13 @@ type MetricsFormProps = {
 export default function MetricsForm({ metrics, setMetrics, disabled }: MetricsFormProps) {
   const [editIndex, setEditIndex] = useState<number | null>(null);
   const [editingMetric, setEditingMetric] = useState<Metric>({
+    id: "", // Add id attribute here
     title: "",
     summary: "",
     description: "",
   });
   const [newMetric, setNewMetric] = useState<Metric>({
+    id: "", // Add id attribute here
     title: "",
     summary: "",
     description: "",
@@ -49,8 +52,9 @@ export default function MetricsForm({ metrics, setMetrics, disabled }: MetricsFo
       return; // Prevent adding empty metrics
     }
 
-    setMetrics([...metrics, newMetric]);
-    setNewMetric({ title: "", summary: "", description: "" }); // Reset form
+    const metricWithId = { ...newMetric, id: uuidv4() }; // Add uuidv4 for unique id
+    setMetrics([...metrics, metricWithId]);
+    setNewMetric({ id: "", title: "", summary: "", description: "" }); // Reset form
   };
 
   // Start editing a metric in place
@@ -89,7 +93,7 @@ export default function MetricsForm({ metrics, setMetrics, disabled }: MetricsFo
         {/* List of Metrics */}
         {metrics.map((metric, index) => (
           <div
-            key={index}
+            key={metric.id}
             className="flex justify-between items-start border p-4 rounded-md shadow-sm"
           >
             {editIndex === index ? (
@@ -186,7 +190,7 @@ export default function MetricsForm({ metrics, setMetrics, disabled }: MetricsFo
                   value={newMetric.title}
                   onChange={(e) => handleChange(e, false)}
                   className={`mt-1 block w-full border border-gray-300 rounded-md p-2 ${inputDisabledStyle}`}
-                  placeholder="Enter a title for the metric"
+                  placeholder="Enter a title for the new metric."
                   disabled={disabled}
                 />
               </label>
@@ -201,7 +205,7 @@ export default function MetricsForm({ metrics, setMetrics, disabled }: MetricsFo
                   value={newMetric.summary}
                   onChange={(e) => handleChange(e, false)}
                   className={`mt-1 block w-full border border-gray-300 rounded-md p-2 ${inputDisabledStyle}`}
-                  placeholder="Enter a short question that the expert can agree or disagree with."
+                  placeholder="Enter a short statement that the expert can agree or disagree with."
                   disabled={disabled}
                 />
               </label>
@@ -225,7 +229,7 @@ export default function MetricsForm({ metrics, setMetrics, disabled }: MetricsFo
             <div className="flex gap-2">
               <button
                 onClick={addMetric}
-                className={`bg-green-600 text-white rounded-md p-2 hover:bg-green-700 flex items-center gap-2 ${buttonDisabledStyle}`}
+                className={`bg-green-500 text-white rounded-md p-2 hover:bg-green-600 flex items-center gap-2 ${buttonDisabledStyle}`}
               >
                 <FontAwesomeIcon icon={faPlus} />
                 Add Metric

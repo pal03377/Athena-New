@@ -1,11 +1,9 @@
-import {useEffect, useState} from "react";
-import {v4 as uuidv4} from "uuid";
-import {downloadJSONFile} from "@/helpers/download";
-import {twMerge} from "tailwind-merge";
+import { useEffect, useState } from "react";
+import { v4 as uuidv4 } from "uuid";
+import { downloadJSONFile } from "@/helpers/download";
+import { twMerge } from "tailwind-merge";
 import MetricsForm from "@/components/view_mode/evaluation_mode/expert_evaluation/metrics_form";
-import {Exercise} from "@/model/exercise";
-import {ExpertEvaluationConfig} from "@/model/expert_evaluation_config";
-import {Metric} from "@/model/metric";
+import { ExpertEvaluationConfig } from "@/model/expert_evaluation_config";
 import EvaluationConfigSelector from "@/components/selectors/evaluation_config_selector";
 import {
   EvaluationManagementExportImport
@@ -16,82 +14,60 @@ import {
 } from "@/hooks/playground/expert_evaluation_config";
 import ExpertLinks from "@/components/view_mode/evaluation_mode/expert_evaluation/expert_links";
 import ExerciseImport from "@/components/view_mode/evaluation_mode/expert_evaluation/exercise_import";
+import useDownloadExpertEvaluationData from "@/hooks/playground/expert_evaluation";
 
+const createNewEvaluationConfig = (name = ""): ExpertEvaluationConfig => ({
+  type: "evaluation_config",
+  id: "new",
+  name,
+  started: false,
+  creationDate: new Date(),
+  metrics: [],
+  exercises: [],
+  expertIds: [],
+});
 
 export default function EvaluationManagement() {
   const [expertEvaluationConfigs, setExpertEvaluationConfigs] = useState<ExpertEvaluationConfig[]>([]);
-  const [selectedConfigId, setSelectedConfigId] = useState<string>("new");
-  const [name, setName] = useState<string>("");
-  const [started, setStarted] = useState<boolean>(false); // This controls if the experiment is locked or not
-  const [creationDate, setCreationDate] = useState<Date | undefined>(undefined);
-  const [metrics, setMetrics] = useState<Metric[]>([]);
-  const [exercises, setExercises] = useState<Exercise[]>([]);
-  const [expertIds, setExpertIds] = useState<string[]>([]);
-
-  const dataMode = 'expert_evaluation';
+  const [selectedConfig, setSelectedConfig] = useState<ExpertEvaluationConfig>(createNewEvaluationConfig());
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [secret, setSecret] = useState<string>("");
+  const [isSecretValid, setIsSecretValid] = useState<boolean>(true);
+  const dataMode = "expert_evaluation";
 
   useEffect(() => {
     const fetchData = async () => {
-    console.log("upon loading page?");
-
-    const savedConfigs = await fetchAllExpertEvaluationConfigs(dataMode);
-    setExpertEvaluationConfigs(savedConfigs);
-  };
-  fetchData();
+      const savedConfigs = await fetchAllExpertEvaluationConfigs(dataMode);
+      setExpertEvaluationConfigs(savedConfigs);
+    };
+    fetchData();
   }, []);
 
-  useEffect(() => {
-    if (selectedConfigId === "new") {
-      setSelectedConfigId(uuidv4())
-      setName("");
-      setStarted(false);
-      setCreationDate(new Date());
-      setMetrics([]);
-      setExercises([]);
-      setExpertIds([]);
+  const handleSelectConfig = (id: string) => {
+    if (id === "new") {
+      setSelectedConfig(createNewEvaluationConfig());
     } else {
-      const selectedConfig = expertEvaluationConfigs.find((config) => config.id === selectedConfigId);
-      if (selectedConfig) {
-        setSelectedConfigId(selectedConfig.id);
-        setName(selectedConfig.name);
-        setStarted(selectedConfig.started);
-        setCreationDate(selectedConfig.creationDate);
-        setMetrics(selectedConfig.metrics);
-        setExercises(selectedConfig.exercises);
-        setExpertIds(selectedConfig.expertIds || []);
+      const existingConfig = expertEvaluationConfigs.find((config) => config.id === id);
+      if (existingConfig) {
+        setSelectedConfig(existingConfig);
       }
     }
-  }, [selectedConfigId, expertEvaluationConfigs]);
+    setHasUnsavedChanges(false);
+  };
 
-  const getSelectedConfig = (): ExpertEvaluationConfig => {
-    if (selectedConfigId === "new") {
-      return {
-        started: started,
-        creationDate: creationDate || new Date(),
-        type: "evaluation_config",
-        id: uuidv4(),
-        name,
-        metrics,
-        exercises,
-        expertIds,
-      };
-    } else {
-      return (expertEvaluationConfigs.find((config) => config.id === selectedConfigId) || {
-        started: false,
-        creationDate: new Date(),
-        type: "evaluation_config",
-        id: uuidv4(),
-        name: "",
-        metrics: [],
-        exercises: [],
-        expertIds: [],
-      });
+  const updateSelectedConfig = (updatedFields: Partial<ExpertEvaluationConfig>) => {
+    const isUpdatingOnlyExpertIds =
+      Object.keys(updatedFields).length === 1 && updatedFields.hasOwnProperty('expertIds');
+    const newConfig = { ...selectedConfig, ...updatedFields };
+
+    if (!selectedConfig.started || isUpdatingOnlyExpertIds) {
+      setSelectedConfig(newConfig);
+      setHasUnsavedChanges(true);
     }
   };
 
-  const definedExpertEvaluationConfig = getSelectedConfig();
-
-  const saveExpertEvaluationConfig = (newConfig: ExpertEvaluationConfig) => {
+  const saveExpertEvaluationConfig = () => {
+    const newConfig = selectedConfig.id === "new" ? { ...selectedConfig, id: uuidv4() } : selectedConfig;
     setExpertEvaluationConfigs((prevConfigs) => {
       const existingIndex = prevConfigs.findIndex((config) => config.id === newConfig.id);
       if (existingIndex !== -1) {
@@ -102,15 +78,14 @@ export default function EvaluationManagement() {
         return [...prevConfigs, newConfig];
       }
     });
-    setSelectedConfigId(newConfig.id);
 
+    setSelectedConfig(newConfig);
     externalSaveExpertEvaluationConfig(dataMode, newConfig);
+    setHasUnsavedChanges(false);
   };
 
   const handleExport = () => {
-    const configToExport = definedExpertEvaluationConfig;
-    if (!configToExport) return;
-    downloadJSONFile(`evaluation_config_${configToExport.name}_${configToExport.id}`, configToExport);
+    downloadJSONFile(`evaluation_config_${selectedConfig.name}_${selectedConfig.id}`, selectedConfig);
   };
 
   const handleImport = async (fileContent: string) => {
@@ -119,44 +94,70 @@ export default function EvaluationManagement() {
       alert("Invalid config type");
       return;
     }
-    importedConfig.id = uuidv4();
+    importedConfig.id = "new";
     importedConfig.creationDate = new Date();
     importedConfig.started = false;
     importedConfig.expertIds = [];
-
-    saveExpertEvaluationConfig(importedConfig);
+    setSelectedConfig(importedConfig);
   };
 
-  const handleExerciseImport = async (fileContent: string) => {
-    const importedExercise = JSON.parse(fileContent) as Exercise;
-    setExercises([...exercises, importedExercise]);
-  }
+  const { mutate: downloadEvaluationData, isLoading: isExporting } = useDownloadExpertEvaluationData({
+    onSuccess: (blob: Blob) => {
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.style.display = "none";
+      a.href = url;
+      a.download = `evaluation_${selectedConfig.id}.zip`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+    },
+    onError: (error) => {
+      if (error.status === 401) {
+        setIsSecretValid(false);
+      } else {
+        console.error("Download failed:", error.message);
+        alert("An error occurred during download. Please try again later.");
+      }
+    },
+  });
 
   const startEvaluation = () => {
-    if (confirm("Are you sure you want to start the evaluation? Once started, no further changes can be made to the configuration!")) {
-      setStarted(true);
-      saveExpertEvaluationConfig({...definedExpertEvaluationConfig, started: true});
+    if (confirm("Are you sure you want to start the evaluation? Once started, you can add new expert links but no other changes can be made to the configuration!")) {
+      updateSelectedConfig({ started: true });
     }
   };
 
-  const inputDisabledStyle = started
+  const resetChanges = () => {
+    if (selectedConfig.id === "new") {
+      setSelectedConfig(createNewEvaluationConfig());
+    } else {
+      const existingConfig = expertEvaluationConfigs.find((config) => config.id === selectedConfig.id);
+      if (existingConfig) {
+        setSelectedConfig(existingConfig);
+      }
+    }
+    setHasUnsavedChanges(false);
+  };
+
+  const inputDisabledStyle = selectedConfig.started
     ? "bg-gray-100 text-gray-500 cursor-not-allowed"
-    : "";  // Style for disabled input fields
+    : "";
 
   return (
     <div className="bg-white rounded-md p-4 mb-8 space-y-4">
       <div className="flex flex-row justify-between items-center">
         <h3 className="text-2xl font-bold">Manage Evaluations</h3>
         <EvaluationManagementExportImport
-          definedExpertEvaluationConfig={definedExpertEvaluationConfig}
+          definedExpertEvaluationConfig={selectedConfig}
           handleExport={handleExport}
           handleImport={handleImport}
         />
       </div>
 
       <EvaluationConfigSelector
-        selectedConfigId={selectedConfigId}
-        setSelectedConfigId={setSelectedConfigId}
+        selectedConfigId={selectedConfig.id}
+        setSelectedConfigId={handleSelectConfig}
         expertEvaluationConfigs={expertEvaluationConfigs}
       />
 
@@ -164,106 +165,101 @@ export default function EvaluationManagement() {
         <span className="text-lg font-bold mb-2">Evaluation Name</span>
         <input
           type="text"
-          placeholder="Insert Evaluation Name"
+          placeholder="Enter a name for the evaluation."
           className={`border border-gray-300 rounded-md p-2 ${inputDisabledStyle}`}
-          value={name}
-          onChange={(e) => {
-            if (!started) {  // Prevent changes if the experiment has started
-              setName(e.target.value);
-              if (selectedConfigId !== "new") {
-                saveExpertEvaluationConfig({...definedExpertEvaluationConfig, name: e.target.value});
-              }
-            }
-          }}
-          disabled={started}
+          value={selectedConfig.name}
+          onChange={(e) => updateSelectedConfig({ name: e.target.value })}
+          disabled={selectedConfig.started}
         />
       </label>
 
       <ExerciseImport
-        exercises={exercises}
-        setExercises={(newExercises: Exercise[]) => {
-          if (!started) {  // Prevent changes if the experiment has started
-            setExercises(newExercises);
-            if (selectedConfigId !== "new") {
-              saveExpertEvaluationConfig({...definedExpertEvaluationConfig, exercises: newExercises});
-            }
-          }
-        }}
-        disabled={started}
+        exercises={selectedConfig.exercises}
+        setExercises={(newExercises) => updateSelectedConfig({ exercises: newExercises })}
+        disabled={selectedConfig.started}
       />
 
       <MetricsForm
-        metrics={metrics}
-        setMetrics={(newMetrics) => {
-          if (!started) {  // Prevent changes if the experiment has started
-            setMetrics(newMetrics);
-            if (selectedConfigId !== "new") {
-              saveExpertEvaluationConfig({...definedExpertEvaluationConfig, metrics: newMetrics});
-            }
-          }
-        }}
-        disabled={started}
+        metrics={selectedConfig.metrics}
+        setMetrics={(newMetrics) => updateSelectedConfig({ metrics: newMetrics })}
+        disabled={selectedConfig.started}
       />
 
       <ExpertLinks
-        expertIds={expertIds}
-        setExpertIds={(newExpertIds) => {
-          setExpertIds(newExpertIds);
-          if (selectedConfigId !== "new") {
-            saveExpertEvaluationConfig({...definedExpertEvaluationConfig, expertIds: newExpertIds});
-          }
-        }
-        }
-        started={started}
-        configId={selectedConfigId}
+        expertIds={selectedConfig.expertIds!}
+        setExpertIds={(newExpertIds) => updateSelectedConfig({ expertIds: newExpertIds })}
+        configId={selectedConfig.id}
+        started={selectedConfig.started}
       />
 
+      {selectedConfig.started && (
+        <label className="flex flex-col mt-4">
+          <span className="text-lg font-bold mb-2">Playground Secret</span>
+          <input
+            type="text"
+            placeholder="Enter the playground secret to download the evaluation data."
+            className={`border ${isSecretValid ? "border-gray-300" : "border-red-500"} rounded-md p-2`}
+            value={secret}
+            onChange={(e) => {
+              setSecret(e.target.value);
+              setIsSecretValid(true);
+            }}
+          />
+          {!isSecretValid && (
+            <span className="text-xs text-red-500 mt-1">The secret is incorrect, please try again!</span>
+          )}
+        </label>
+      )}
 
-      {!started && (
-        <div className="flex flex-row gap-2">
+      <div className="flex flex-row gap-2 mt-4">
+        <button
+          className={twMerge(
+            selectedConfig.id === "new" ? "bg-blue-500 hover:bg-blue-600" : "bg-green-500 hover:bg-green-600",
+            "text-white rounded-md p-2",
+            !hasUnsavedChanges ? "opacity-60 cursor-not-allowed" : ""
+          )}
+          onClick={saveExpertEvaluationConfig}
+          disabled={!hasUnsavedChanges}
+        >
+          {selectedConfig.id === "new" ? "Define Experiment" : "Save Changes"}
+        </button>
+
+        <button
+          className={twMerge(
+            selectedConfig.id === "new"
+              ? "bg-red-500 hover:bg-red-600"
+              : "bg-gray-500 hover:bg-gray-600",
+            "text-white rounded-md p-2",
+            !hasUnsavedChanges ? "opacity-60 cursor-not-allowed" : ""
+          )}
+          onClick={resetChanges}
+          disabled={!hasUnsavedChanges}
+        >
+          {selectedConfig.id === "new" ? "Cancel" : "Reset Changes"}
+        </button>
+
+        {selectedConfig.started && (
           <button
             className={twMerge(
-              "bg-primary-500 text-white rounded-md p-2 mt-2 hover:bg-primary-600",
-              !definedExpertEvaluationConfig
-                ? "disabled:text-gray-500 disabled:bg-gray-200 disabled:cursor-not-allowed"
-                : ""
+              "bg-blue-500 text-white rounded-md p-2 hover:bg-blue-600",
+              isExporting ? "opacity-75 cursor-not-allowed" : ""
             )}
-            onClick={() => {
-              if (definedExpertEvaluationConfig) {
-                saveExpertEvaluationConfig(definedExpertEvaluationConfig);
-              }
-            }}
-            disabled={!definedExpertEvaluationConfig}  // Disable if no config is defined
+            onClick={() => downloadEvaluationData({ configId: selectedConfig.id, secret })}
+            disabled={isExporting}
           >
-            {selectedConfigId === "new" ? "Define Experiment" : "Save Changes"}
+            {isExporting ? "Downloading..." : "Download Results"}
           </button>
+        )}
 
-          {selectedConfigId !== "new" && (
-            <button
-              className="bg-red-500 text-white rounded-md p-2 mt-2 hover:bg-red-600"
-              onClick={() => {
-                if (confirm("Cancel evaluation?")) {
-                  setExpertEvaluationConfigs((prevConfigs) =>
-                    prevConfigs.filter((config) => config.id !== selectedConfigId)
-                  );
-                  setSelectedConfigId("new");
-                }
-              }}
-            >
-              Cancel
-            </button>
-          )}
-
+        {selectedConfig.id !== "new" && !selectedConfig.started && (
           <button
-            className="bg-green-500 text-white rounded-md p-2 mt-2 hover:bg-green-600 disabled:bg-gray-300 disabled:text-gray-600 disabled:cursor-not-allowed"
+            className="bg-green-500 text-white rounded-md p-2 hover:bg-green-600"
             onClick={startEvaluation}
-            disabled={!definedExpertEvaluationConfig}
           >
             Start Evaluation
           </button>
-
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }
