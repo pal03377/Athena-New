@@ -11,4 +11,6 @@ export type ExpertEvaluationProgress = {
       };
     };
   };
+    has_started_evaluating: boolean;
+
 };

@@ -250,10 +250,8 @@ export function addStructuredGradingInstructionsToFeedback(
 
                 Object.keys(feedback).forEach((category) => {
                     const categoryFeedback = feedback[category];
-                    if (Array.isArray(categoryFeedback)) {
                         // Map over feedback and link structured grading instructions
                         processedFeedbacks[category] = feedback[category].map((feedbackItem) => {
-                            // Link structured grading instructions
                             if (feedbackItem.structured_grading_instruction_id) {
                                 feedbackItem.structured_grading_instruction = exercise?.grading_criteria
                                     ?.flatMap((criteria) => criteria.structured_grading_instructions)
@@ -264,7 +262,7 @@ export function addStructuredGradingInstructionsToFeedback(
                             }
                             return feedbackItem;
                         });
-                    }
+
                 });
                 submission.feedbacks = processedFeedbacks;
     }
@@ -369,7 +367,7 @@ export function saveProgressToFileSync(
 export function anonymizeFeedbackCategoriesAndShuffle(
     expertEvaluationConfig: ExpertEvaluationConfig
 ) {
-    // Initialize mappings as a plain object
+
     const mappings: { [key: string]: string } = {};
 
     // Iterate over exercises
@@ -401,8 +399,6 @@ export function anonymizeFeedbackCategoriesAndShuffle(
             }
         }
     }
-
-    // Save the mappings as a plain object in the config
     expertEvaluationConfig.mappings = mappings;
 }
 
@@ -423,6 +419,7 @@ export function saveConfigToFileSync(
         current_submission_index: 0,
         current_exercise_index: 0,
         selected_values: {},
+        has_started_evaluating: false,
     };
     const expertProgressData = JSON.stringify(progress, null, 2);
 

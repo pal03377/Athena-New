@@ -12,6 +12,8 @@ import {ExpertEvaluationProgress} from "@/model/expert_evaluation_progress";
 import {useRouter} from "next/router";
 import {fetchExpertEvaluationConfig} from "@/hooks/playground/expert_evaluation_config";
 import {ExpertEvaluationConfig} from "@/model/expert_evaluation_config";
+import CongratulationScreen from "@/components/expert_evaluation/expert_view/congratulation_screen";
+import WelcomeScreen from "@/components/expert_evaluation/expert_view/welcome_screen";
 
 function SideBySideExpertView() {
     const router = useRouter();
@@ -28,13 +30,14 @@ function SideBySideExpertView() {
     const [metrics, setMetrics] = useState<Metric[]>([]);
     const [selectedValues, setSelectedValues] = useState<ExpertEvaluationProgress['selected_values']>({});
     const [evaluationStarted, setEvaluationStarted] = useState<boolean>(false);
+    const [hasStartedEvaluating, setHasStartedEvaluating] = useState<boolean>(true); //TODO true
+    const [isFinishedEvaluating, setIsFinishedEvaluating] = useState<boolean>(false);
 
     useEffect(() => {
             const fetchData = async () => {
                     if (expert_evaluation_config_id && expert_id) {
                         try {
                             // Fetch and set data from evaluation config
-                            // TODO SharedExpertEvaluationConfig anonym and no links
                             const config: ExpertEvaluationConfig = await fetchExpertEvaluationConfig(dataMode, expert_evaluation_config_id);
                             setExercises(config.exercises);
                             setMetrics(config.metrics);
@@ -50,6 +53,7 @@ function SideBySideExpertView() {
                             setCurrentSubmissionIndex(expertEvaluationProgress.current_submission_index);
                             setCurrentExerciseIndex(expertEvaluationProgress.current_exercise_index);
                             setSelectedValues(expertEvaluationProgress.selected_values);
+                            setHasStartedEvaluating(expertEvaluationProgress.has_started_evaluating);
 
                         } catch (error) {
                             console.error('Error loading expert evaluation progress: ', error);
@@ -72,6 +76,13 @@ function SideBySideExpertView() {
         }
     }, [exercises, metrics]);
 
+    useEffect(() => {
+        if (currentSubmissionIndex > 0) {
+            saveProgress();
+        }
+    }, [currentSubmissionIndex]);
+
+
     const handleNext = () => {
         const currentExercise = exercises[currentExerciseIndex];
         // If we are at the last submission for the current exercise, go to the next exercise
@@ -82,14 +93,12 @@ function SideBySideExpertView() {
             // Move to the next exercise, reset submission index
             setCurrentExerciseIndex((prevIndex) => prevIndex + 1);
             setCurrentSubmissionIndex(0);
+
+        } else {
+            setIsFinishedEvaluating(true);
         }
     };
 
-    useEffect(() => {
-        if (currentSubmissionIndex > 0) {
-            saveProgress();
-        }
-    }, [currentSubmissionIndex]);
 
     const handlePrevious = () => {
         // If we are not at the first submission, just decrement the submission index
@@ -107,14 +116,39 @@ function SideBySideExpertView() {
 
     const saveProgress = () => {
         if (expert_evaluation_config_id && expert_id) {
+            setHasStartedEvaluating(true);
             const progress: ExpertEvaluationProgress = {
                 current_submission_index: currentSubmissionIndex,
                 current_exercise_index: currentExerciseIndex,
                 selected_values: selectedValues,
+                has_started_evaluating: true,
             };
             saveExpertEvaluationProgress(dataMode, expert_evaluation_config_id, expert_id, progress);
         }
     }
+
+    const handleWelcomeClose = () => {
+        alert("in handle welcome close");
+        setHasStartedEvaluating(false); // Set evaluation as started
+        //saveProgress(); // Save progress
+        window.close();
+    };
+
+    if (hasStartedEvaluating) { //TODO add !
+        console.error("true :(");
+        return <WelcomeScreen onClose={handleWelcomeClose}/>;
+    }
+
+    const handleRestart = () => {
+        // This will reload the page or reset the evaluation state
+        handlePrevious();
+        window.location.reload();
+    };
+
+     if (isFinishedEvaluating) {
+        return <CongratulationScreen onRestart={handleRestart}/>;
+    }
+
 
     const handleLikertValueChange = (feedbackType: string, metricTitle: string, value: number) => {
         const exerciseId = currentExercise.id.toString();
@@ -145,7 +179,8 @@ function SideBySideExpertView() {
     }
 
     if (!evaluationStarted) {
-        return <div className={"bg-white p-6 text-red-60"}>The expert evaluation (id={expert_evaluation_config_id}) has not yet
+        return <div className={"bg-white p-6 text-red-60"}>The expert evaluation (id={expert_evaluation_config_id}) has
+            not yet
             started.</div>;
     }
 
@@ -159,6 +194,7 @@ function SideBySideExpertView() {
     const currentSubmission = currentExercise?.submissions?.[currentSubmissionIndex];
     const globalSubmissionIndex = exercises.slice(0, currentExerciseIndex).reduce((sum, exercise) => sum + exercise.submissions!.length, 0) + currentSubmissionIndex;
 
+
     if (currentExercise && currentSubmission && currentSubmission.feedbacks) {
         return (
             <div className={"bg-white p-6"}>
@@ -170,6 +206,7 @@ function SideBySideExpertView() {
                     onPrevious={handlePrevious}
                     metrics={metrics}
                     onContinueLater={saveProgress}
+                    hasStartedEvaluating={hasStartedEvaluating}
                 />
                 <LikertScaleForm submission={currentSubmission as TextSubmission}
                                  exercise={currentExercise}

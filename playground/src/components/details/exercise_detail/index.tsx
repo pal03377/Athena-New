@@ -29,7 +29,7 @@ export default function ExerciseDetail({
   })();
 
   return hideDisclosure ? (
-    <div className="mt-2 space-y-1">
+    <div className="mt-2 space-y-1 w-full lg:w-[60vw] max-h-[50vh] overflow-y-auto overflow-x-hidden flex flex-col">
       <CommonExerciseDetail exercise={exercise} openedInitially={openedInitially} />
       {specificExerciseDetail}
     </div>

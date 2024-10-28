@@ -48,8 +48,6 @@ export async function fetchAllExpertEvaluationConfigs(
     return await response.json() as Promise<ExpertEvaluationConfig[]>;
 }
 
-//TODO fetch for only one config
-
 /** Deletes an expert evaluation config from the server */
 async function deleteExpertEvaluationConfig(configId: string) {
     const response = await fetch(`${baseUrl}/api/data/evaluation/expert_evaluation_config/${configId}`, {

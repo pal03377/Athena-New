@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import Popup from "@/components/expert_evaluation/expert_view/popup";
-import { Metric } from "@/model/metric";
+import {Metric} from "@/model/metric";
 import rehypeRaw from "rehype-raw";
 import ReactMarkdown from "react-markdown";
 import ExerciseDetail from "@/components/details/exercise_detail";
@@ -10,20 +10,22 @@ type SideBySideHeaderProps = {
     globalSubmissionIndex: number;
     totalSubmissions: number;
     metrics: Metric[];
+    hasStartedEvaluating: boolean;
     onNext: () => void;
     onPrevious: () => void;
     onContinueLater: () => void;
 }
 
 export default function SideBySideHeader({
-    exercise,
-    globalSubmissionIndex,
-    totalSubmissions,
-    metrics,
-    onNext,
-    onPrevious,
-    onContinueLater,
-}: SideBySideHeaderProps) {
+                                             exercise,
+                                             globalSubmissionIndex,
+                                             totalSubmissions,
+                                             metrics,
+                                             hasStartedEvaluating,
+                                             onNext,
+                                             onPrevious,
+                                             onContinueLater,
+                                         }: SideBySideHeaderProps) {
     const [isExerciseDetailOpen, setIsExerciseDetailOpen] = useState<boolean>(false);
     const [isMetricDetailOpen, setIsMetricDetailOpen] = useState<boolean>(false);
     const [isEvaluationTutorialOpen, setIsEvaluationTutorialOpen] = useState<boolean>(false);
@@ -35,6 +37,17 @@ export default function SideBySideHeader({
     const openEvaluationTutorial = () => setIsEvaluationTutorialOpen(true);
     const closeEvaluationTutorial = () => setIsEvaluationTutorialOpen(false);
 
+    useEffect(() => {
+        openExerciseDetail();
+    }, [exercise]);
+
+    useEffect(() => {
+        if (!hasStartedEvaluating) {
+            openEvaluationTutorial();
+        }
+
+    }, [hasStartedEvaluating]);
+
     if (!exercise) {
         return <div>Loading...</div>;
     }
@@ -43,6 +56,7 @@ export default function SideBySideHeader({
     const buttonBase = "px-4 py-1.5 rounded-md transition";
     const buttonPrimary = `${buttonBase} bg-blue-500 text-white hover:bg-blue-600`;
     const buttonSecondary = `${buttonBase} bg-gray-300 text-gray-700 hover:bg-gray-400`;
+    const buttonFinish = `${buttonBase} bg-green-600 text-white hover:bg-green-700`;
 
     return (
         <div className="mb-4 sticky top-0 z-10 bg-white"> {/* Sticky header */}
@@ -60,8 +74,9 @@ export default function SideBySideHeader({
                         <button className={buttonSecondary} onClick={openExerciseDetail}>
                             📄 Exercise Details
                         </button>
-                        <Popup isOpen={isExerciseDetailOpen} onClose={closeExerciseDetail} title={`Exercise Details: ${exercise.title}`}>
-                            <ExerciseDetail exercise={exercise} hideDisclosure={true} openedInitially={true} />
+                        <Popup isOpen={isExerciseDetailOpen} onClose={closeExerciseDetail}
+                               title={`Exercise Details: ${exercise.title}`}>
+                            <ExerciseDetail exercise={exercise} hideDisclosure={true} openedInitially={true}/>
                         </Popup>
 
                         <button className={buttonSecondary} onClick={openMetricDetail}>
@@ -83,8 +98,9 @@ export default function SideBySideHeader({
                         <button className={buttonSecondary} onClick={openEvaluationTutorial}>
                             📚 Evaluation Tutorial
                         </button>
-                        <Popup isOpen={isEvaluationTutorialOpen} onClose={closeEvaluationTutorial} title="Evaluation Tutorial">
-                            This is how you do the evaluation: ...
+                        <Popup isOpen={isEvaluationTutorialOpen} onClose={closeEvaluationTutorial}
+                               title="Evaluation Tutorial">
+                            Some placeholder pictures
                         </Popup>
                     </div>
                 </div>
@@ -108,11 +124,13 @@ export default function SideBySideHeader({
                             ⬅️ Previous
                         </button>
                         <button
-                            className={`${buttonPrimary} w-full`}
+                            className={`${globalSubmissionIndex === totalSubmissions - 1
+                                    ? buttonFinish
+                                    : buttonPrimary
+                            } w-full`}
                             onClick={onNext}
-                            disabled={globalSubmissionIndex === totalSubmissions - 1}
                         >
-                            Next ➡️
+                            {globalSubmissionIndex === totalSubmissions - 1 ? 'Finish 🏁' : 'Next ➡️'}
                         </button>
                     </div>
                 </div>
@@ -122,7 +140,7 @@ export default function SideBySideHeader({
             <div className="relative w-full bg-gray-300 h-2 rounded">
                 <div
                     className="bg-blue-500 h-2 rounded"
-                    style={{ width: `${(globalSubmissionIndex + 1) / totalSubmissions * 100}%` }}
+                    style={{width: `${(globalSubmissionIndex + 1) / totalSubmissions * 100}%`}}
                 />
             </div>
             <span className="text-sm text-gray-700">

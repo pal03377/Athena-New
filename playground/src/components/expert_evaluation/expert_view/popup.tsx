@@ -13,7 +13,7 @@ const Popup: React.FC<PopupProps> = ({ isOpen, onClose, title, children }) => {
   return (
     <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center p-6" onClick={onClose}>
       <div
-        className="bg-white p-6 rounded-lg shadow-lg max-w-6xl max-h-full relative overflow-y-scroll"
+        className="bg-white p-6 rounded-lg shadow-lg max-w-7xl max-h-full relative"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex justify-between items-center mb-4">
