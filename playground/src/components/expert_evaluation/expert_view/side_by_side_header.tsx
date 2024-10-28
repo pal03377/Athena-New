@@ -1,16 +1,16 @@
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import Popup from "@/components/expert_evaluation/expert_view/popup";
 import {Metric} from "@/model/metric";
 import rehypeRaw from "rehype-raw";
 import ReactMarkdown from "react-markdown";
-import ExerciseDetail from "@/components/details/exercise_detail";
+import ExerciseDetailPopup from "@/components/expert_evaluation/expert_view/exercise_detail_popup";
+import TutorialPopup from "@/components/expert_evaluation/expert_view/tutorial_popup";
 
 type SideBySideHeaderProps = {
     exercise: any;
     globalSubmissionIndex: number;
     totalSubmissions: number;
     metrics: Metric[];
-    hasStartedEvaluating: boolean;
     onNext: () => void;
     onPrevious: () => void;
     onContinueLater: () => void;
@@ -21,7 +21,6 @@ export default function SideBySideHeader({
                                              globalSubmissionIndex,
                                              totalSubmissions,
                                              metrics,
-                                             hasStartedEvaluating,
                                              onNext,
                                              onPrevious,
                                              onContinueLater,
@@ -36,17 +35,6 @@ export default function SideBySideHeader({
     const closeMetricDetail = () => setIsMetricDetailOpen(false);
     const openEvaluationTutorial = () => setIsEvaluationTutorialOpen(true);
     const closeEvaluationTutorial = () => setIsEvaluationTutorialOpen(false);
-
-    useEffect(() => {
-        openExerciseDetail();
-    }, [exercise]);
-
-    useEffect(() => {
-        if (!hasStartedEvaluating) {
-            openEvaluationTutorial();
-        }
-
-    }, [hasStartedEvaluating]);
 
     if (!exercise) {
         return <div>Loading...</div>;
@@ -74,10 +62,10 @@ export default function SideBySideHeader({
                         <button className={buttonSecondary} onClick={openExerciseDetail}>
                             📄 Exercise Details
                         </button>
-                        <Popup isOpen={isExerciseDetailOpen} onClose={closeExerciseDetail}
-                               title={`Exercise Details: ${exercise.title}`}>
-                            <ExerciseDetail exercise={exercise} hideDisclosure={true} openedInitially={true}/>
-                        </Popup>
+                        <ExerciseDetailPopup
+                            exercise={exercise}
+                            isOpen={isExerciseDetailOpen}
+                            onClose={closeExerciseDetail}/>
 
                         <button className={buttonSecondary} onClick={openMetricDetail}>
                             📊 Metric Details
@@ -98,10 +86,7 @@ export default function SideBySideHeader({
                         <button className={buttonSecondary} onClick={openEvaluationTutorial}>
                             📚 Evaluation Tutorial
                         </button>
-                        <Popup isOpen={isEvaluationTutorialOpen} onClose={closeEvaluationTutorial}
-                               title="Evaluation Tutorial">
-                            Some placeholder pictures
-                        </Popup>
+                        <TutorialPopup isOpen={isEvaluationTutorialOpen} onClose={closeEvaluationTutorial}/>
                     </div>
                 </div>
 
@@ -114,6 +99,7 @@ export default function SideBySideHeader({
                         😴 Continue Later
                     </button>
 
+
                     {/* Wrapping buttons to match the width */}
                     <div className="flex gap-2 w-full md:w-[250px]">
                         <button
@@ -125,8 +111,8 @@ export default function SideBySideHeader({
                         </button>
                         <button
                             className={`${globalSubmissionIndex === totalSubmissions - 1
-                                    ? buttonFinish
-                                    : buttonPrimary
+                                ? buttonFinish
+                                : buttonPrimary
                             } w-full`}
                             onClick={onNext}
                         >

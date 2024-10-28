@@ -14,6 +14,8 @@ import {fetchExpertEvaluationConfig} from "@/hooks/playground/expert_evaluation_
 import {ExpertEvaluationConfig} from "@/model/expert_evaluation_config";
 import CongratulationScreen from "@/components/expert_evaluation/expert_view/congratulation_screen";
 import WelcomeScreen from "@/components/expert_evaluation/expert_view/welcome_screen";
+import ExerciseScreen from "@/components/expert_evaluation/expert_view/exercise_screen";
+import ContinueLaterScreen from "@/components/expert_evaluation/expert_view/continue_later_screen";
 
 function SideBySideExpertView() {
     const router = useRouter();
@@ -30,8 +32,10 @@ function SideBySideExpertView() {
     const [metrics, setMetrics] = useState<Metric[]>([]);
     const [selectedValues, setSelectedValues] = useState<ExpertEvaluationProgress['selected_values']>({});
     const [evaluationStarted, setEvaluationStarted] = useState<boolean>(false);
-    const [hasStartedEvaluating, setHasStartedEvaluating] = useState<boolean>(true); //TODO true
+    const [hasStartedEvaluating, setHasStartedEvaluating] = useState<boolean>(true);
     const [isFinishedEvaluating, setIsFinishedEvaluating] = useState<boolean>(false);
+    const [isNewExercise, setIsNewExercise] = useState<boolean>(false);
+    const [isContinueLater, setContinueLater] = useState<boolean>(false);
 
     useEffect(() => {
             const fetchData = async () => {
@@ -42,7 +46,6 @@ function SideBySideExpertView() {
                             setExercises(config.exercises);
                             setMetrics(config.metrics);
                             setEvaluationStarted(config.started);
-                            alert("Config started: " + config.started);
 
                         } catch
                             (error) {
@@ -59,6 +62,7 @@ function SideBySideExpertView() {
                         } catch (error) {
                             console.error('Error loading expert evaluation progress: ', error);
                         }
+                        setContinueLater(false);
                     }
                 }
             ;fetchData();
@@ -88,6 +92,7 @@ function SideBySideExpertView() {
             // Move to the next exercise, reset submission index
             setCurrentExerciseIndex((prevIndex) => prevIndex + 1);
             setCurrentSubmissionIndex(0);
+            setIsNewExercise(true);
 
         } else {
             setIsFinishedEvaluating(true);
@@ -115,12 +120,27 @@ function SideBySideExpertView() {
     };
 
     const handleWelcomeClose = () => {
-        alert("in handle welcome close");
-        setHasStartedEvaluating(false); // Set evaluation as started
-        //saveProgress(); // Save progress
+        setHasStartedEvaluating(false);
+        saveProgress();
         window.close();
     };
 
+    const handleNextExercise = () => {
+        setIsNewExercise(false);
+        window.close();
+    }
+
+    const handleCloseContinueLater = () => {
+        setContinueLater(false);
+        window.close();
+    }
+
+    const handleOpenContinueLater = () => {
+        saveProgress();
+        setContinueLater(true);
+    }
+
+    //TODO remove
     const handleRestart = () => {
         // This will reload the page or reset the evaluation state
         handlePrevious();
@@ -140,27 +160,27 @@ function SideBySideExpertView() {
         }
     }
 
-        const handleLikertValueChange = (feedbackType: string, metricId: string, value: number) => {
-        const exerciseId = currentExercise.id.toString();
-        let submissionId = "";
-        if (currentExercise.submissions) {
-            submissionId = currentExercise.submissions[currentSubmissionIndex].id.toString();
-        }
+    const handleLikertValueChange = (feedbackType: string, metricId: string, value: number) => {
+    const exerciseId = currentExercise.id.toString();
+    let submissionId = "";
+    if (currentExercise.submissions) {
+        submissionId = currentExercise.submissions[currentSubmissionIndex].id.toString();
+    }
 
-        setSelectedValues((prevValues) => ({
-            ...prevValues,
-            [exerciseId]: {
-                ...prevValues[exerciseId],
-                [submissionId]: {
-                    ...prevValues[exerciseId]?.[submissionId],
-                    [feedbackType]: {
-                        ...prevValues[exerciseId]?.[submissionId]?.[feedbackType],
-                        [metricId]: value
-                    }
+    setSelectedValues((prevValues) => ({
+        ...prevValues,
+        [exerciseId]: {
+            ...prevValues[exerciseId],
+            [submissionId]: {
+                ...prevValues[exerciseId]?.[submissionId],
+                [feedbackType]: {
+                    ...prevValues[exerciseId]?.[submissionId]?.[feedbackType],
+                    [metricId]: value
                 }
             }
-        }));
-    }
+        }
+    }));
+}
 
     if (!exercises && !metrics) {
         return <div className={"bg-white p-6 text-red-60"}>
@@ -183,13 +203,30 @@ function SideBySideExpertView() {
         return <WelcomeScreen onClose={handleWelcomeClose}/>;
     }
 
-    if (isFinishedEvaluating) {
-        return <CongratulationScreen onRestart={handleRestart}/>;
+    if (isContinueLater) {
+        return <ContinueLaterScreen
+            onClose={handleCloseContinueLater}
+
+        />
     }
 
     const currentExercise = exercises[currentExerciseIndex];
     const currentSubmission = currentExercise?.submissions?.[currentSubmissionIndex];
     const globalSubmissionIndex = exercises.slice(0, currentExerciseIndex).reduce((sum, exercise) => sum + exercise.submissions!.length, 0) + currentSubmissionIndex;
+
+    if (isNewExercise) {
+        return <ExerciseScreen
+            onCloseExerciseDetail={handleNextExercise}
+            onOpenContinueLater={handleOpenContinueLater}
+            exercise={currentExercise}
+            currentExerciseIndex={currentExerciseIndex}
+            totalExercises={exercises.length}
+        />;
+    }
+
+    if (isFinishedEvaluating) {
+        return <CongratulationScreen onRestart={handleRestart}/>;
+    }
 
     if (currentExercise && currentSubmission && currentSubmission.feedbacks) {
         return (
@@ -201,8 +238,7 @@ function SideBySideExpertView() {
                     onNext={handleNext}
                     onPrevious={handlePrevious}
                     metrics={metrics}
-                    onContinueLater={saveProgress}
-                    hasStartedEvaluating={hasStartedEvaluating}
+                    onContinueLater={handleOpenContinueLater}
                 />
                 <LikertScaleForm submission={currentSubmission as TextSubmission}
                                  exercise={currentExercise}

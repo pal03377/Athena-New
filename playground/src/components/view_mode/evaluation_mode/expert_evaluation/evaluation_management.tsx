@@ -131,6 +131,11 @@ const saveExpertEvaluationConfig = (configToSave = selectedConfig) => {
     }
   };
 
+  const updateExpertLinks = (newExpertIds: string[]) => {
+    const updatedConfig = updateSelectedConfig({ expertIds: newExpertIds });
+    saveExpertEvaluationConfig(updatedConfig);
+  }
+
   const resetChanges = () => {
     if (selectedConfig.id === "new") {
       setSelectedConfig(createNewEvaluationConfig());
@@ -190,7 +195,7 @@ const saveExpertEvaluationConfig = (configToSave = selectedConfig) => {
 
       <ExpertLinks
         expertIds={selectedConfig.expertIds!}
-        setExpertIds={(newExpertIds) => updateSelectedConfig({ expertIds: newExpertIds })}
+        setExpertIds={(newExpertIds) => updateExpertLinks(newExpertIds)} //TODO ldv
         configId={selectedConfig.id}
         started={selectedConfig.started}
       />
