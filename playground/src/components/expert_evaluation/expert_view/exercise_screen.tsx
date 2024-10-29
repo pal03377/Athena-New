@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import ExerciseDetailPopup from "@/components/expert_evaluation/expert_view/exercise_detail_popup";
 import {Exercise} from "@/model/exercise";
-import background_image from "@/assets/start2.webp";
+import background_image from "@/assets/evaluation_backgrounds/exercise.webp";
 
 
 interface ExerciseScreenProps {

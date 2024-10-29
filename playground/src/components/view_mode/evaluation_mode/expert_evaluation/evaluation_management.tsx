@@ -195,7 +195,7 @@ const saveExpertEvaluationConfig = (configToSave = selectedConfig) => {
 
       <ExpertLinks
         expertIds={selectedConfig.expertIds!}
-        setExpertIds={(newExpertIds) => updateExpertLinks(newExpertIds)} //TODO ldv
+        setExpertIds={(newExpertIds) => updateExpertLinks(newExpertIds)}
         configId={selectedConfig.id}
         started={selectedConfig.started}
       />

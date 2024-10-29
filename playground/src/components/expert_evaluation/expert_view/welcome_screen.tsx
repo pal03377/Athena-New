@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import TutorialPopup from "@/components/expert_evaluation/expert_view/tutorial_popup";
-import background_image from "@/assets/start1.webp";
+import background_image from "@/assets/evaluation_backgrounds/welcome-screen.webp";
 
 interface WelcomeScreenProps {
     onClose: () => void;

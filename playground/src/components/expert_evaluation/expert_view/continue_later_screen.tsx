@@ -1,5 +1,5 @@
 import React from 'react';
-import background_image from "@/assets/save-progress.webp";
+import background_image from "@/assets/evaluation_backgrounds/save-progress.webp";
 
 
 interface ContinueLaterScreenProps {

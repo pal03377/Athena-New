@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Confetti from 'react-confetti';
-import background_image from "@/assets/congratulations1.webp";
+import background_image from "@/assets/evaluation_backgrounds/congratulations1.webp";
 
 
 interface CongratulationScreenProps {

@@ -46,7 +46,6 @@ function SideBySideExpertView() {
                             setExercises(config.exercises);
                             setMetrics(config.metrics);
                             setEvaluationStarted(config.started);
-
                         } catch
                             (error) {
                             console.error('Error loading expert evaluation configuration: ', error);
@@ -81,21 +80,54 @@ function SideBySideExpertView() {
         }
     }, [exercises, metrics]);
 
+    const isExerciseComplete = (): boolean => {
+        const exerciseData = selectedValues[currentExercise.id];
+        if (!exerciseData) return false; // No data for this exercise
+
+        if(currentSubmission){
+            const submissionData = exerciseData[currentSubmission.id];
+            if (!submissionData) return false; // No data for this submission
+
+            const currentFeedbacks = currentSubmission.feedbacks;
+
+            if (currentFeedbacks) {
+                // Check if all required feedback types and metrics are selected
+                for (const feedbackType of Object.keys(currentFeedbacks)) {
+                    const feedbackData = submissionData[feedbackType];
+                    if (!feedbackData) return false;
+
+                    for (const metric of metrics) {
+                        if (!(metric.id in feedbackData)) return false;
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
 
     const handleNext = () => {
-        const currentExercise = exercises[currentExerciseIndex];
-        // If we are at the last submission for the current exercise, go to the next exercise
-        if (currentSubmissionIndex < currentExercise.submissions!.length - 1) {
-            setCurrentSubmissionIndex((prevIndex) => prevIndex + 1);
+        let confirmed = true;
+        if (!isExerciseComplete()) { //TODO uncomment
+            confirmed = confirm("Are you sure want to continue with the next submission? You did not yet evaluate all metrics!");
 
-        } else if (currentExerciseIndex < exercises.length - 1) {
-            // Move to the next exercise, reset submission index
-            setCurrentExerciseIndex((prevIndex) => prevIndex + 1);
-            setCurrentSubmissionIndex(0);
-            setIsNewExercise(true);
+        }
 
-        } else {
-            setIsFinishedEvaluating(true);
+        if (confirmed) {
+            const currentExercise = exercises[currentExerciseIndex];
+            // If we are at the last submission for the current exercise, go to the next exercise
+            if (currentSubmissionIndex < currentExercise.submissions!.length - 1) {
+                setCurrentSubmissionIndex((prevIndex) => prevIndex + 1);
+
+            } else if (currentExerciseIndex < exercises.length - 1) {
+                // Move to the next exercise, reset submission index
+                setCurrentExerciseIndex((prevIndex) => prevIndex + 1);
+                setCurrentSubmissionIndex(0);
+                setIsNewExercise(true);
+
+            } else {
+                setIsFinishedEvaluating(true);
+            }
         }
     };
 
@@ -118,6 +150,7 @@ function SideBySideExpertView() {
             setCurrentSubmissionIndex(previousExercise.submissions!.length - 1);
         }
     };
+
 
     const handleWelcomeClose = () => {
         setHasStartedEvaluating(false);
@@ -161,26 +194,26 @@ function SideBySideExpertView() {
     }
 
     const handleLikertValueChange = (feedbackType: string, metricId: string, value: number) => {
-    const exerciseId = currentExercise.id.toString();
-    let submissionId = "";
-    if (currentExercise.submissions) {
-        submissionId = currentExercise.submissions[currentSubmissionIndex].id.toString();
-    }
+        const exerciseId = currentExercise.id.toString();
+        let submissionId = "";
+        if (currentExercise.submissions) {
+            submissionId = currentExercise.submissions[currentSubmissionIndex].id.toString();
+        }
 
-    setSelectedValues((prevValues) => ({
-        ...prevValues,
-        [exerciseId]: {
-            ...prevValues[exerciseId],
-            [submissionId]: {
-                ...prevValues[exerciseId]?.[submissionId],
-                [feedbackType]: {
-                    ...prevValues[exerciseId]?.[submissionId]?.[feedbackType],
-                    [metricId]: value
+        setSelectedValues((prevValues) => ({
+            ...prevValues,
+            [exerciseId]: {
+                ...prevValues[exerciseId],
+                [submissionId]: {
+                    ...prevValues[exerciseId]?.[submissionId],
+                    [feedbackType]: {
+                        ...prevValues[exerciseId]?.[submissionId]?.[feedbackType],
+                        [metricId]: value
+                    }
                 }
             }
-        }
-    }));
-}
+        }));
+    }
 
     if (!exercises && !metrics) {
         return <div className={"bg-white p-6 text-red-60"}>
@@ -195,7 +228,8 @@ function SideBySideExpertView() {
     }
 
     if (!evaluationStarted) {
-        return <div className={"bg-white p-6 text-red-60"}>The expert evaluation (id={expert_evaluation_config_id}) has
+        return <div className={"bg-white p-6 text-red-60"}>The expert evaluation (id={expert_evaluation_config_id})
+            has
             not yet started.</div>;
     }
 
@@ -204,10 +238,7 @@ function SideBySideExpertView() {
     }
 
     if (isContinueLater) {
-        return <ContinueLaterScreen
-            onClose={handleCloseContinueLater}
-
-        />
+        return <ContinueLaterScreen onClose={handleCloseContinueLater}/>
     }
 
     const currentExercise = exercises[currentExerciseIndex];
