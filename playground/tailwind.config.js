@@ -13,9 +13,6 @@ module.exports = {
         primary: colors.blue,
         muted: colors.gray,
       },
-      backgroundImage: {
-        'congratulation-bg': "url('/test2.jpg')",
-      }
     }
   },
   plugins: [
