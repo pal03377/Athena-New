@@ -108,7 +108,7 @@ function SideBySideExpertView() {
 
     const handleNext = () => {
         let confirmed = true;
-        if (!isExerciseComplete()) { //TODO uncomment
+        if (!isExerciseComplete()) {
             confirmed = confirm("Are you sure want to continue with the next submission? You did not yet evaluate all metrics!");
 
         }

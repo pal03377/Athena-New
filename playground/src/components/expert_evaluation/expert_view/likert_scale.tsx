@@ -116,6 +116,5 @@ const SingleChoiceLikertScale: React.FC<SingleChoiceLikertScaleProps> = ({
         </>
     );
 };
-//TODO ldv mark that values are missing
 
 export default SingleChoiceLikertScale;
