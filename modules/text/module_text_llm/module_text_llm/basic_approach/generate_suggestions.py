@@ -1,52 +1,22 @@
-from typing import List, Optional
-from pydantic import BaseModel, Field
+from typing import List
 
 from athena import emit_meta
 from athena.text import Exercise, Submission, Feedback
 from athena.logger import logger
-
-from module_text_llm.approaches.chain_of_thought_approach.config import ChainOfThoughtConfig
-
 from llm_core.utils.llm_utils import (
     get_chat_prompt_with_formatting_instructions, 
     check_prompt_length_and_omit_features_if_necessary, 
     num_tokens_from_prompt,
 )
+from athena.text import Exercise, Submission, Feedback
 from llm_core.utils.predict_and_parse import predict_and_parse
 
+from module_text_llm.config import BasicApproachConfig
 from module_text_llm.helpers.utils import add_sentence_numbers, get_index_range_from_line_range, format_grading_instructions
+from module_text_llm.basic_approach.prompt_generate_suggestions import AssessmentModel
 
-class FeedbackModel(BaseModel):
-    title: str = Field(description="Very short title, i.e. feedback category or similar", example="Logic Error")
-    description: str = Field(description="Feedback description")
-    line_start: Optional[int] = Field(description="Referenced line number start, or empty if unreferenced")
-    line_end: Optional[int] = Field(description="Referenced line number end, or empty if unreferenced")
-    credits: float = Field(0.0, description="Number of points received/deducted")
-    grading_instruction_id: Optional[int] = Field(
-        description="ID of the grading instruction that was used to generate this feedback, or empty if no grading instruction was used"
-    )
-
-class AssessmentModel(BaseModel):
-    """Collection of feedbacks making up an assessment"""
-    
-    feedbacks: List[FeedbackModel] = Field(description="Assessment feedbacks")
-class InitialAssessment(BaseModel):
-    title: str = Field(description="Very short title, i.e. feedback category or similar", example="Logic Error")
-    description: str = Field(description="Feedback description")
-    line_start: Optional[int] = Field(description="Referenced line number start, or empty if unreferenced")
-    line_end: Optional[int] = Field(description="Referenced line number end, or empty if unreferenced")
-    credits: float = Field(0.0, description="Number of points received/deducted")
-    reasoning: str = Field(description="Reasoning why the feedback was given")
-    impprovment_suggestion: str = Field(description="Suggestion for improvement for the student")
-
-class InitialAssessmentModel(BaseModel):
-    """Collection of feedbacks making up an assessment"""
-    
-    feedbacks: List[InitialAssessment] = Field(description="Assessment feedbacks")
-    
-async def generate_suggestions(exercise: Exercise, submission: Submission, config: ChainOfThoughtConfig, debug: bool) -> List[Feedback]:
+async def generate_suggestions(exercise: Exercise, submission: Submission, config: BasicApproachConfig, debug: bool) -> List[Feedback]:
     model = config.model.get_model()  # type: ignore[attr-defined]
-
     prompt_input = {
         "max_points": exercise.max_points,
         "bonus_points": exercise.bonus_points,
@@ -60,10 +30,8 @@ async def generate_suggestions(exercise: Exercise, submission: Submission, confi
         model=model, 
         system_message=config.generate_suggestions_prompt.system_message, 
         human_message=config.generate_suggestions_prompt.human_message, 
-        pydantic_object=InitialAssessmentModel
+        pydantic_object=AssessmentModel
     )
-    
-
 
     # Check if the prompt is too long and omit features if necessary (in order of importance)
     omittable_features = ["example_solution", "problem_statement", "grading_instructions"]
@@ -83,46 +51,23 @@ async def generate_suggestions(exercise: Exercise, submission: Submission, confi
             emit_meta("error", f"Input too long {num_tokens_from_prompt(chat_prompt, prompt_input)} > {config.max_input_tokens}")
         return []
 
-    initial_result = await predict_and_parse(
+    result = await predict_and_parse(
         model=model, 
         chat_prompt=chat_prompt, 
         prompt_input=prompt_input, 
-        pydantic_object=InitialAssessmentModel,
+        pydantic_object=AssessmentModel,
         tags=[
             f"exercise-{exercise.id}",
             f"submission-{submission.id}",
-        ]
+        ],
+        use_function_calling=True
     )
 
-    second_prompt_input = {
-        "answer" : initial_result.dict(),
-        "submission": add_sentence_numbers(submission.text)
-
-    }
-    
-    second_chat_prompt = get_chat_prompt_with_formatting_instructions(     
-        model=model, 
-        system_message=config.generate_suggestions_prompt.second_system_message, 
-        human_message=config.generate_suggestions_prompt.answer_message, 
-        pydantic_object=AssessmentModel)
-    
-    result = await predict_and_parse(
-    model=model, 
-    chat_prompt=second_chat_prompt, 
-    prompt_input=second_prompt_input, 
-    pydantic_object=AssessmentModel,
-    tags=[
-        f"exercise-{exercise.id}",
-        f"submission-{submission.id}",
-    ]
-    )
-        
     if debug:
         emit_meta("generate_suggestions", {
             "prompt": chat_prompt.format(**prompt_input),
             "result": result.dict() if result is not None else None
         })
-
 
     if result is None:
         return []

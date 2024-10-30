@@ -9,8 +9,8 @@ class ApproachType(str, Enum):
     
 class ApproachConfig(BaseModel, ABC):
     max_input_tokens: int = Field(default=3000, description="Maximum number of tokens in the input prompt.")
-    model: ModelConfigType = Field(default=DefaultModelConfig())  # type: ignore
-    type: ApproachType = Field(..., description="The type of approach config")
+    model: ModelConfigType = Field(default=DefaultModelConfig())
+    type: str = Field(..., description="The type of approach config")
 
     class Config:
         use_enum_values = True

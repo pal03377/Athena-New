@@ -2,10 +2,10 @@ from pydantic import BaseModel, Field
 from typing import Union
 from athena import config_schema_provider
 
-from module_text_llm.approaches.chain_of_thought_approach.config import ChainOfThoughtConfig
-from module_text_llm.approaches.basic_approach.config import BasicApproachConfig
+from module_text_llm.chain_of_thought_approach import ChainOfThoughtConfig
+from module_text_llm.basic_approach import BasicApproachConfig
 
-ApproachConfigUnion = Union[ChainOfThoughtConfig, BasicApproachConfig]
+ApproachConfigUnion = Union[BasicApproachConfig, ChainOfThoughtConfig]
 
 @config_schema_provider
 class Configuration(BaseModel):

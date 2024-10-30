@@ -10,7 +10,7 @@ from athena.logger import logger
 from module_text_llm.config import Configuration
 from module_text_llm.evaluation import get_feedback_statistics, get_llm_statistics
 from module_text_llm.generate_evaluation import generate_evaluation
-from module_text_llm.approaches.approach_controller import generate_suggestions
+from module_text_llm.approach_controller import generate_suggestions
 
 @submissions_consumer
 def receive_submissions(exercise: Exercise, submissions: List[Submission]):
