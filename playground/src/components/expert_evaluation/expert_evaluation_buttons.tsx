@@ -55,6 +55,7 @@ export const SecondaryButton: React.FC<SecondaryButtonProps> = ({
 interface PrimaryButtonProps {
     onClick?: () => void;
     isInline?: boolean;
+    isDisabled?: boolean,
     className?: string;
     text: string;
 }
@@ -62,25 +63,26 @@ interface PrimaryButtonProps {
 export const PrimaryButton: React.FC<PrimaryButtonProps> = ({
                                                                 onClick,
                                                                 isInline = false,
+                                                                isDisabled = false,
                                                                 className = '',
                                                                 text,
                                                             }) => (
     <button
         onClick={onClick} // Will only trigger if `onClick` is provided
-        className={`${buttonPrimary} ${isInline ? 'inline-block' : 'w-full'} ${className}`}
+        className={`${buttonPrimary} ${isInline ? 'inline-block' : ''} ${className}`}
+        disabled={isDisabled}
     >
         {text}
     </button>
 );
 
 
-// Info Icon Button Component
 export const InfoIconButton: React.FC<{ onClick?: () => void; className?: string }> = ({
                                                                                            onClick,
                                                                                            className = '',
                                                                                        }) => (
     <span
-        onClick={onClick} // Will only trigger if `onClick` is provided
+        onClick={onClick}
         className={`text-gray-400 cursor-pointer hover:text-gray-600 ${className}`}
         role="img"
         aria-label="info"

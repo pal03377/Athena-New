@@ -225,7 +225,7 @@ function SideBySideExpertView() {
     }
 
     if (!exercises && !metrics) {
-        return <div className={"bg-white p-6 text-red-60"}>
+        return <div className={"bg-white p-6 text-red-600"}>
             Could not fetch config data for expert evaluation (id={expert_evaluation_config_id})
         </div>;
     }
@@ -237,7 +237,7 @@ function SideBySideExpertView() {
     }
 
     if (!evaluationStarted) {
-        return <div className={"bg-white p-6 text-red-60"}>The expert evaluation (id={expert_evaluation_config_id})
+        return <div className={"bg-white p-6 text-red-600"}>The expert evaluation (id={expert_evaluation_config_id})
             has
             not yet started.</div>;
     }

@@ -1,6 +1,7 @@
 import React, {useState} from 'react';
 import TutorialPopup from "@/components/expert_evaluation/expert_view/tutorial_popup";
 import background_image from "@/assets/evaluation_backgrounds/welcome-screen.webp";
+import {PrimaryButton} from "@/components/expert_evaluation/expert_evaluation_buttons";
 
 interface WelcomeScreenProps {
     onClose: () => void;
@@ -14,10 +15,14 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({onClose}) => {
         onClose();
     }
 
+    const startTutorial = () => {
+        setTutorialOpen(true);
+    }
+
     return (
         <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50"
              style={{
-                 backgroundImage: `url(${background_image.src})`, // Use the same path as in tailwind.config.js
+                 backgroundImage: `url(${background_image.src})`,
                  backgroundSize: 'cover',
                  backgroundPosition: 'center',
              }}>
@@ -27,12 +32,11 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({onClose}) => {
                     Thank you for taking the time to participate. Your input is valuable to us, and we appreciate your
                     effort.
                 </p>
-                <button
-                    className="bg-blue-500 text-white px-6 py-3 rounded-lg text-lg hover:bg-blue-600"
-                    onClick={() => setTutorialOpen(true)}
-                >
-                    📚 Start Tutorial
-                </button>
+                <PrimaryButton
+                    onClick={startTutorial}
+                    text="📚 Start Tutorial"
+                    className="px-6 py-3"
+                />
             </div>
             <TutorialPopup isOpen={isTutorialOpen}
                            onClose={closeTutorial}/>

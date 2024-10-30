@@ -2,6 +2,7 @@ import React, {useState} from 'react';
 import ExerciseDetailPopup from "@/components/expert_evaluation/expert_view/exercise_detail_popup";
 import {Exercise} from "@/model/exercise";
 import background_image from "@/assets/evaluation_backgrounds/exercise.webp";
+import {PrimaryButton, SecondaryButton} from "@/components/expert_evaluation/expert_evaluation_buttons";
 
 
 interface ExerciseScreenProps {
@@ -45,19 +46,19 @@ const ExerciseScreen: React.FC<ExerciseScreenProps> = ({
                 <p className="text-lg mb-6">
                     When you are ready, continue with the next exercise: {exercise.title}.
                 </p>
-                <button
-                    className="bg-blue-500 text-white px-6 py-3 rounded-lg text-lg hover:bg-blue-600"
-                    onClick={onOpenContinueLater}
-                >
-                    😴 Continue Later
-                </button>
+                <div className="flex justify-center mt-4">
+                    <SecondaryButton
+                        onClick={onOpenContinueLater}
+                        text="😴 Continue Later"
+                        className="px-6 py-3"
+                    />
 
-                <button
-                    className="bg-blue-500 text-white px-6 py-3 rounded-lg text-lg hover:bg-blue-600 ml-4"
-                    onClick={() => setExerciseDetailOpen(true)} // Open the ExerciseDetailPopup
-                >
-                    📄 Exercise Details
-                </button>
+                    <SecondaryButton
+                        onClick={() => setExerciseDetailOpen(true)}
+                        text="📄 Exercise Details"
+                        className="ml-4 px-6 py-3"
+                    />
+                </div>
             </div>
             {/* ExerciseDetailPopup that shows up when isExerciseDetailOpen is true */}
             <ExerciseDetailPopup

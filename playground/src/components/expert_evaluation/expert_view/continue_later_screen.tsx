@@ -1,5 +1,6 @@
 import React from 'react';
 import background_image from "@/assets/evaluation_backgrounds/save-progress.webp";
+import {PrimaryButton} from "@/components/expert_evaluation/expert_evaluation_buttons";
 
 
 interface ContinueLaterScreenProps {
@@ -23,12 +24,11 @@ const ContinueLaterScreen: React.FC<ContinueLaterScreenProps> = ({
                 <p className="text-lg mb-6">
                     Your progress has been saved. You can continue the evaluation later using the same link.
                 </p>
-                <button
-                    className="bg-blue-500 text-white px-6 py-3 rounded-lg text-lg hover:bg-blue-600 ml-4"
+                <PrimaryButton
                     onClick={onClose}
-                >
-                    Continue Evaluation
-                </button>
+                    text="Continue Evaluation"
+                    className="px-6 py-3 ml-4"
+                />
             </div>
         </div>
     );

@@ -35,7 +35,7 @@ const LikertScaleForm: React.FC<LikertScaleFormProps> = ({
                                                              isMarkMissingValue
                                                          }) => {
     if (!exercise || !submission) {
-        return <div>Loading...</div>; // Show a loading state until the data is fetched
+        return <div>Loading...</div>;
     }
 
     return (

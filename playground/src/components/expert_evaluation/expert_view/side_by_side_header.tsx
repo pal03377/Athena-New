@@ -5,7 +5,7 @@ import rehypeRaw from "rehype-raw";
 import ReactMarkdown from "react-markdown";
 import ExerciseDetailPopup from "@/components/expert_evaluation/expert_view/exercise_detail_popup";
 import TutorialPopup from "@/components/expert_evaluation/expert_view/tutorial_popup";
-import {SecondaryButton, NextButton} from "@/components/expert_evaluation/expert_evaluation_buttons";
+import {SecondaryButton, NextButton, PrimaryButton} from "@/components/expert_evaluation/expert_evaluation_buttons";
 
 type SideBySideHeaderProps = {
     exercise: any;
@@ -40,10 +40,6 @@ export default function SideBySideHeader({
     if (!exercise) {
         return <div>Loading...</div>;
     }
-
-    // Reusable button styles
-    const buttonBase = "px-4 py-1.5 rounded-md transition";
-    const buttonPrimary = `${buttonBase} bg-blue-500 text-white hover:bg-blue-600`;
 
     return (
         <div className="mb-4 sticky top-0 z-10 bg-white"> {/* Sticky header */}
@@ -89,13 +85,7 @@ export default function SideBySideHeader({
 
                     {/* Wrapping buttons to match the width */}
                     <div className="flex gap-2 w-full md:w-[250px]">
-                        <button
-                            className={`${buttonPrimary} w-full`}
-                            onClick={onPrevious}
-                            disabled={globalSubmissionIndex === 0}
-                        >
-                            ⬅️ Previous
-                        </button>
+                        <PrimaryButton text={'⬅️ Previous'} onClick={onPrevious} isDisabled={globalSubmissionIndex === 0} className={'w-full'}/>
                         <NextButton onClick={onNext} isFinish={globalSubmissionIndex === totalSubmissions - 1} />
                     </div>
                 </div>

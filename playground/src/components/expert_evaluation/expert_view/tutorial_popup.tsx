@@ -59,7 +59,6 @@ const tutorialSteps = [
     },
     {
         image: continueLater.src,
-        //description: "6. When you are ready to take a break, click on the 😴 Continue Later button."
         description: (
             <>
                 6. When you are ready to take a break, click on the

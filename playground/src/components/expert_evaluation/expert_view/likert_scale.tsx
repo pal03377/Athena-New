@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from 'react';
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCircleInfo } from "@fortawesome/free-solid-svg-icons/faCircleInfo";
+import React, {useEffect, useState} from 'react';
 import Popup from "@/components/expert_evaluation/expert_view/popup";
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
+import {InfoIconButton} from "@/components/expert_evaluation/expert_evaluation_buttons";
 
 interface SingleChoiceLikertScaleProps {
     title: string;
@@ -15,13 +14,13 @@ interface SingleChoiceLikertScaleProps {
 }
 
 const SingleChoiceLikertScale: React.FC<SingleChoiceLikertScaleProps> = ({
-    title,
-    summary,
-    description,
-    passedValue,
-    onLikertChange,
-    isHighlighted,
-}) => {
+                                                                             title,
+                                                                             summary,
+                                                                             description,
+                                                                             passedValue,
+                                                                             onLikertChange,
+                                                                             isHighlighted,
+                                                                         }) => {
     const [selectedValue, setSelectedValue] = useState<number | null>(null);
     const [isPopupOpen, setIsPopupOpen] = useState(false);
 
@@ -77,14 +76,7 @@ const SingleChoiceLikertScale: React.FC<SingleChoiceLikertScaleProps> = ({
             {/* Title and Info Section */}
             <div className="flex items-center">
                 <h3 className="text-sm font-semibold mr-1">{title}</h3>
-                <span
-                    onClick={handleInfoClick}
-                    className="text-gray-400 cursor-pointer hover:text-gray-600"
-                    role="img"
-                    aria-label="info"
-                >
-                    <FontAwesomeIcon icon={faCircleInfo} />
-                </span>
+                <InfoIconButton onClick={handleInfoClick}/>
             </div>
             <Popup isOpen={isPopupOpen} onClose={closePopup} title="Information">
                 <ReactMarkdown rehypePlugins={[rehypeRaw]} className="prose prose-sm max-w-none">
