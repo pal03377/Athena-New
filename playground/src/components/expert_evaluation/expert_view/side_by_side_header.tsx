@@ -5,6 +5,7 @@ import rehypeRaw from "rehype-raw";
 import ReactMarkdown from "react-markdown";
 import ExerciseDetailPopup from "@/components/expert_evaluation/expert_view/exercise_detail_popup";
 import TutorialPopup from "@/components/expert_evaluation/expert_view/tutorial_popup";
+import {SecondaryButton, NextButton} from "@/components/expert_evaluation/expert_evaluation_buttons";
 
 type SideBySideHeaderProps = {
     exercise: any;
@@ -43,8 +44,6 @@ export default function SideBySideHeader({
     // Reusable button styles
     const buttonBase = "px-4 py-1.5 rounded-md transition";
     const buttonPrimary = `${buttonBase} bg-blue-500 text-white hover:bg-blue-600`;
-    const buttonSecondary = `${buttonBase} bg-gray-300 text-gray-700 hover:bg-gray-400`;
-    const buttonFinish = `${buttonBase} bg-green-600 text-white hover:bg-green-700`;
 
     return (
         <div className="mb-4 sticky top-0 z-10 bg-white"> {/* Sticky header */}
@@ -59,17 +58,13 @@ export default function SideBySideHeader({
 
                     {/* Details Buttons */}
                     <div className="flex flex-col md:flex-row gap-2 w-full">
-                        <button className={buttonSecondary} onClick={openExerciseDetail}>
-                            📄 Exercise Details
-                        </button>
+                        <SecondaryButton text={'📄 Exercise Details'} onClick={openExerciseDetail}/>
                         <ExerciseDetailPopup
                             exercise={exercise}
                             isOpen={isExerciseDetailOpen}
                             onClose={closeExerciseDetail}/>
 
-                        <button className={buttonSecondary} onClick={openMetricDetail}>
-                            📊 Metric Details
-                        </button>
+                        <SecondaryButton text={'📊 Metric Details'} onClick={openMetricDetail}/>
                         <Popup isOpen={isMetricDetailOpen} onClose={closeMetricDetail} title="Metric Details">
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                                 {metrics.map((metric, index) => (
@@ -83,22 +78,14 @@ export default function SideBySideHeader({
                             </div>
                         </Popup>
 
-                        <button className={buttonSecondary} onClick={openEvaluationTutorial}>
-                            📚 Evaluation Tutorial
-                        </button>
+                        <SecondaryButton text={'📚 Evaluation Tutorial'} onClick={openEvaluationTutorial}/>
                         <TutorialPopup isOpen={isEvaluationTutorialOpen} onClose={closeEvaluationTutorial}/>
                     </div>
                 </div>
 
                 {/* Align buttons to the end */}
                 <div className="flex flex-col items-end gap-2 mt-4 md:mt-0 w-full md:w-[250px] self-end">
-                    <button
-                        className={`${buttonSecondary} w-full`}
-                        onClick={onContinueLater}
-                    >
-                        😴 Continue Later
-                    </button>
-
+                    <SecondaryButton text={'😴 Continue Later'} onClick={onContinueLater} className={'w-full'}/>
 
                     {/* Wrapping buttons to match the width */}
                     <div className="flex gap-2 w-full md:w-[250px]">
@@ -109,15 +96,7 @@ export default function SideBySideHeader({
                         >
                             ⬅️ Previous
                         </button>
-                        <button
-                            className={`${globalSubmissionIndex === totalSubmissions - 1
-                                ? buttonFinish
-                                : buttonPrimary
-                            } w-full`}
-                            onClick={onNext}
-                        >
-                            {globalSubmissionIndex === totalSubmissions - 1 ? 'Finish 🏁' : 'Next ➡️'}
-                        </button>
+                        <NextButton onClick={onNext} isFinish={globalSubmissionIndex === totalSubmissions - 1} />
                     </div>
                 </div>
             </div>
