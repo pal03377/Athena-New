@@ -11,7 +11,7 @@ interface SingleChoiceLikertScaleProps {
     description: string;
     passedValue: number | null;
     onLikertChange: (value: number) => void;
-    resetState: boolean;
+    isHighlighted: boolean;
 }
 
 const SingleChoiceLikertScale: React.FC<SingleChoiceLikertScaleProps> = ({
@@ -20,7 +20,7 @@ const SingleChoiceLikertScale: React.FC<SingleChoiceLikertScaleProps> = ({
     description,
     passedValue,
     onLikertChange,
-    resetState,
+    isHighlighted,
 }) => {
     const [selectedValue, setSelectedValue] = useState<number | null>(null);
     const [isPopupOpen, setIsPopupOpen] = useState(false);
@@ -31,7 +31,7 @@ const SingleChoiceLikertScale: React.FC<SingleChoiceLikertScaleProps> = ({
 
     useEffect(() => {
         setSelectedValue(passedValue);
-    }, [resetState]);
+    }, [passedValue]);
 
     const handleChange = (value: number) => {
         setSelectedValue(value);
@@ -102,7 +102,7 @@ const SingleChoiceLikertScale: React.FC<SingleChoiceLikertScaleProps> = ({
                         key={index}
                         onClick={() => handleChange(index)}
                         className={`flex-1 text-xs py-0.5 text-center transition-colors duration-200 ease-in-out
-                            ${selectedValue === index ? selectedBgColors[index] : 'bg-white'} 
+                            ${selectedValue === index ? selectedBgColors[index] : isHighlighted ? 'bg-red-100' : 'bg-white'}
                             ${selectedValue === index ? `${borderColors[index]} border-l border-t border-r` : 'border-gray-300 border-l border-t border-r'}
                             border-b-4 ${borderColors[index]}
                             ${index === 0 ? 'rounded-l-md' : ''} ${index === scaleLabels.length - 1 ? 'rounded-r-md' : ''}`}

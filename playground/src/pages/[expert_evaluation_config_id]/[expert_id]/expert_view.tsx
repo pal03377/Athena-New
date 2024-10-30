@@ -36,6 +36,7 @@ function SideBySideExpertView() {
     const [isFinishedEvaluating, setIsFinishedEvaluating] = useState<boolean>(false);
     const [isNewExercise, setIsNewExercise] = useState<boolean>(false);
     const [isContinueLater, setContinueLater] = useState<boolean>(false);
+    const [isMarkMissingValues, setMarkMissingVaues] = useState<boolean>(false);
 
     useEffect(() => {
             const fetchData = async () => {
@@ -84,7 +85,7 @@ function SideBySideExpertView() {
         const exerciseData = selectedValues[currentExercise.id];
         if (!exerciseData) return false; // No data for this exercise
 
-        if(currentSubmission){
+        if (currentSubmission) {
             const submissionData = exerciseData[currentSubmission.id];
             if (!submissionData) return false; // No data for this submission
 
@@ -105,12 +106,19 @@ function SideBySideExpertView() {
         return true;
     }
 
+    const currentExercise = exercises[currentExerciseIndex];
+    const currentSubmission = currentExercise?.submissions?.[currentSubmissionIndex];
+    const globalSubmissionIndex = exercises.slice(0, currentExerciseIndex).reduce((sum, exercise) => sum + exercise.submissions!.length, 0) + currentSubmissionIndex;
 
     const handleNext = () => {
         let confirmed = true;
         if (!isExerciseComplete()) {
+            setMarkMissingVaues(true);
             confirmed = confirm("Are you sure want to continue with the next submission? You did not yet evaluate all metrics!");
+        }
 
+        if (globalSubmissionIndex === submissionsLength - 1) {
+            confirmed = confirm("Are you sure you want to finish the evaluation? Once you finish, you can no longer make any changes!");
         }
 
         if (confirmed) {
@@ -128,6 +136,7 @@ function SideBySideExpertView() {
             } else {
                 setIsFinishedEvaluating(true);
             }
+            setMarkMissingVaues(false);
         }
     };
 
@@ -241,9 +250,6 @@ function SideBySideExpertView() {
         return <ContinueLaterScreen onClose={handleCloseContinueLater}/>
     }
 
-    const currentExercise = exercises[currentExerciseIndex];
-    const currentSubmission = currentExercise?.submissions?.[currentSubmissionIndex];
-    const globalSubmissionIndex = exercises.slice(0, currentExerciseIndex).reduce((sum, exercise) => sum + exercise.submissions!.length, 0) + currentSubmissionIndex;
 
     if (isNewExercise) {
         return <ExerciseScreen
@@ -276,7 +282,8 @@ function SideBySideExpertView() {
                                  feedback={currentSubmission.feedbacks}
                                  metrics={metrics}
                                  selectedValues={selectedValues}
-                                 onLikertValueChange={handleLikertValueChange}/>
+                                 onLikertValueChange={handleLikertValueChange}
+                                 isMarkMissingValue={isMarkMissingValues}/>
             </div>
         );
     } else {

@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import SingleChoiceLikertScale from "@/components/expert_evaluation/expert_view/likert_scale";
 import TextSubmissionDetail from "@/components/details/submission_detail/text";
-import type { TextSubmission } from "@/model/submission";
-import { CategorizedFeedback } from "@/model/feedback";
-import { Exercise } from "@/model/exercise";
-import { Metric } from "@/model/metric";
+import type {TextSubmission} from "@/model/submission";
+import {CategorizedFeedback} from "@/model/feedback";
+import {Exercise} from "@/model/exercise";
+import {Metric} from "@/model/metric";
 
 interface LikertScaleFormProps {
     submission: TextSubmission;
@@ -15,23 +15,25 @@ interface LikertScaleFormProps {
         [exerciseId: string]: { //TODO define somewhere
             [submissionId: string]: {
                 [feedbackType: string]: {
-                    [metricId: string]: number; // The Likert scale value for each metric
+                    [metricId: string]: number; // The Likert scale value for a metric
                 };
             };
         };
     };
     onLikertValueChange: (feedbackType: string, metricId: string, value: number) => void;
+    isMarkMissingValue: boolean
 }
 
 
-const LikertScaleForm: React.FC<LikertScaleFormProps> = ({ submission, exercise, feedback, metrics, selectedValues, onLikertValueChange }) => {
-    const [resetState, setResetState] = useState<boolean>(false);
-    useEffect(() => {
-        setResetState(!resetState);
-    }, [submission, exercise]); // Trigger when submission or exercise changes
-    //TODO is this needed
-
-
+const LikertScaleForm: React.FC<LikertScaleFormProps> = ({
+                                                             submission,
+                                                             exercise,
+                                                             feedback,
+                                                             metrics,
+                                                             selectedValues,
+                                                             onLikertValueChange,
+                                                             isMarkMissingValue
+                                                         }) => {
     if (!exercise || !submission) {
         return <div>Loading...</div>; // Show a loading state until the data is fetched
     }
@@ -58,6 +60,8 @@ const LikertScaleForm: React.FC<LikertScaleFormProps> = ({ submission, exercise,
                             {metrics.map((metric) => {
                                 const selectedValue =
                                     selectedValues?.[exercise.id]?.[submission.id]?.[feedbackType]?.[metric.id] ?? null;
+                                const isHighlighted = isMarkMissingValue && (selectedValue === null);
+
                                 return (
                                     <div key={`${feedbackType}-${metric.id}`} className="mb-2">
                                         <SingleChoiceLikertScale
@@ -68,7 +72,7 @@ const LikertScaleForm: React.FC<LikertScaleFormProps> = ({ submission, exercise,
                                             onLikertChange={(value: number) =>
                                                 onLikertValueChange(feedbackType, metric.id, value)
                                             }
-                                            resetState={resetState}
+                                            isHighlighted={isHighlighted}
                                         />
                                     </div>
                                 );

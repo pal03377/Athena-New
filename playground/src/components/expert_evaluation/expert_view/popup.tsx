@@ -25,7 +25,8 @@ const Popup: React.FC<PopupProps> = ({ isOpen, onClose, title, children }) => {
             ╳
           </button>
         </div>
-        <div>
+        {/* Scrollable content wrapper */}
+        <div className="overflow-y-auto max-h-[80vh]">
           {children}
         </div>
       </div>
