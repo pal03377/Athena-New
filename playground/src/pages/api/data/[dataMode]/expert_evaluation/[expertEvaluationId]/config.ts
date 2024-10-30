@@ -15,25 +15,28 @@ function handler(req: NextApiRequest, res: NextApiResponse) {
         const expertEvaluationConfig: ExpertEvaluationConfig = req.body;
 
         anonymizeFeedbackCategoriesAndShuffle(expertEvaluationConfig);
-        console.log("After anonymize " + expertEvaluationConfig.mappings?.size);
         saveConfigToFileSync(dataMode, expertEvaluationConfig);
+        return res.status(200).json({message: 'Config created successfully'});
 
+    } else if (req.method == 'PUT') {
+        const {dataMode} = req.query as { dataMode: DataMode };
+        const expertEvaluationConfig: ExpertEvaluationConfig = req.body;
+
+        saveConfigToFileSync(dataMode, expertEvaluationConfig);
         return res.status(200).json({message: 'Config saved successfully'});
 
     } else if (req.method == 'GET') {
         const {dataMode, expertEvaluationId} = req.query as { dataMode: DataMode; expertEvaluationId: string };
-
         let config = getAnonymizedConfigFromFileSync(dataMode, expertEvaluationId);
         if (config) {
             config.exercises.forEach((exercise) => {
                 addStructuredGradingInstructionsToFeedback(exercise);
             });
         }
-
-        return res.status(200).json(config)
+        return res.status(200).json(config);
     } else {
         res.setHeader('Allow', ['POST']);
-        return res.status(405).json({message: 'Only GET or POST requests allowed'});
+        return res.status(405).json({message: 'Only GET, POST and PUT requests allowed'});
     }
 }
 

@@ -69,7 +69,8 @@ export default function EvaluationManagement() {
   };
 
 const saveExpertEvaluationConfig = (configToSave = selectedConfig) => {
-  const newConfig = configToSave.id === "new" ? { ...configToSave, id: uuidv4() } : configToSave;
+  const isNewConfig = configToSave.id === "new";
+  const newConfig = isNewConfig? { ...configToSave, id: uuidv4() } : configToSave;
   setExpertEvaluationConfigs((prevConfigs) => {
     const existingIndex = prevConfigs.findIndex((config) => config.id === newConfig.id);
     if (existingIndex !== -1) {
@@ -82,7 +83,7 @@ const saveExpertEvaluationConfig = (configToSave = selectedConfig) => {
   });
 
   setSelectedConfig(newConfig);
-  externalSaveExpertEvaluationConfig(dataMode, newConfig);
+  externalSaveExpertEvaluationConfig(dataMode, newConfig, isNewConfig);
   setHasUnsavedChanges(false);
 };
 
@@ -131,6 +132,7 @@ const saveExpertEvaluationConfig = (configToSave = selectedConfig) => {
     }
   };
 
+  //TODO
   const updateExpertLinks = (newExpertIds: string[]) => {
     const updatedConfig = updateSelectedConfig({ expertIds: newExpertIds });
     saveExpertEvaluationConfig(updatedConfig);
@@ -195,7 +197,7 @@ const saveExpertEvaluationConfig = (configToSave = selectedConfig) => {
 
       <ExpertLinks
         expertIds={selectedConfig.expertIds!}
-        setExpertIds={(newExpertIds) => updateExpertLinks(newExpertIds)}
+        setExpertIds={(newExpertIds) => updateSelectedConfig({ expertIds: newExpertIds })}
         configId={selectedConfig.id}
         started={selectedConfig.started}
       />

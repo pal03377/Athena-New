@@ -26,7 +26,6 @@ function handler(req: NextApiRequest, res: NextApiResponse) {
         let progress = getProgressFromFileSync(dataMode, expertEvaluationId, expertId);
 
         if (!progress || Object.keys(progress).length === 0) {
-            //TODO check in frontend if progress not found and display message
             return res.status(404).json({message: 'Progress not found'});
         }
         return res.status(200).json(progress)

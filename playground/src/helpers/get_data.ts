@@ -407,7 +407,7 @@ export function anonymizeFeedbackCategoriesAndShuffle(
 
 export function saveConfigToFileSync(
   dataMode: DataMode,
-  expertEvaluation: ExpertEvaluationConfig
+  expertEvaluation: ExpertEvaluationConfig,
 ) {
   const configData = JSON.stringify(expertEvaluation, null, 2);
 
@@ -418,38 +418,41 @@ export function saveConfigToFileSync(
     `evaluation_config_${expertEvaluation.id}.json`
   );
 
-const progress: ExpertEvaluationProgress = {
+  const progress: ExpertEvaluationProgress = {
     current_submission_index: 0,
     current_exercise_index: 0,
     selected_values: {},
     has_started_evaluating: false,
-};
-const expertProgressData = JSON.stringify(progress, null, 2);
+  };
+  const expertProgressData = JSON.stringify(progress, null, 2);
 
   let dirPath = path.join(
-    process.cwd(),
-    "data",
-    ...getDataModeParts(dataMode),
-    `evaluation_${expertEvaluation.id}`);
+      process.cwd(),
+      "data",
+      ...getDataModeParts(dataMode),
+      `evaluation_${expertEvaluation.id}`);
 
   // Create parent directory
   if (!fs.existsSync(dirPath)) {
-    fs.mkdirSync(dirPath, { recursive: true });
+    fs.mkdirSync(dirPath, {recursive: true});
   }
 
   if (expertEvaluation.expertIds) {
     for (const expertId of expertEvaluation.expertIds) {
-      // Create json for each expert
+      // Create progress json for each expert
       let expertProgressPath = path.join(
-        dirPath,
-        `evaluation_progress_${expertId}.json`
+          dirPath,
+          `evaluation_progress_${expertId}.json`
       );
 
-      fs.writeFileSync(expertProgressPath, expertProgressData, 'utf8');
-    }
+      // Only create a new empty progress file if it does not yet exist
+      if (!fs.existsSync(expertProgressPath)) {
+        fs.writeFileSync(expertProgressPath, expertProgressData, 'utf8');
+      }
   }
+}
 
-  // Create config file with exercises and data
+  // Create or update config file with exercises and data
   return fs.writeFileSync(configPath, configData, 'utf8');
 }
 
