@@ -8,7 +8,7 @@ export async function saveExpertEvaluationProgress(
   expertId: string,
   progress: ExpertEvaluationProgress) {
   const response = await fetch(`${baseUrl}/api/data/${dataMode}/expert_evaluation/${expertEvaluationId}/${expertId}/progress`, {
-    method: 'POST',
+    method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
     },

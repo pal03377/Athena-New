@@ -9,6 +9,7 @@ interface CongratulationScreenProps {
 
 const CongratulationScreen: React.FC<CongratulationScreenProps> = ({ onRestart }) => {
     const [windowSize, setWindowSize] = useState({ width: window.innerWidth, height: window.innerHeight });
+    //TODO remove button below
 
     useEffect(() => {
         const handleResize = () => {

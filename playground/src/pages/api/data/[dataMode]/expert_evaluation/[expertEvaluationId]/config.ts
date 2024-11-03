@@ -28,11 +28,8 @@ function handler(req: NextApiRequest, res: NextApiResponse) {
     } else if (req.method == 'GET') {
         const {dataMode, expertEvaluationId} = req.query as { dataMode: DataMode; expertEvaluationId: string };
         let config = getAnonymizedConfigFromFileSync(dataMode, expertEvaluationId);
-        if (config) {
-            config.exercises.forEach((exercise) => {
-                addStructuredGradingInstructionsToFeedback(exercise);
-            });
-        }
+
+        addStructuredGradingInstructionsToFeedback(config);
         return res.status(200).json(config);
     } else {
         res.setHeader('Allow', ['POST']);

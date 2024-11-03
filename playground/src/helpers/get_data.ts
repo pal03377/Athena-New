@@ -1,17 +1,17 @@
-import type { Exercise } from "@/model/exercise";
-import type { Submission } from "@/model/submission";
-import type { CategorizedFeedback, Feedback } from "@/model/feedback";
-import type { DataMode } from "@/model/data_mode";
+import type {Exercise} from "@/model/exercise";
+import type {Submission} from "@/model/submission";
+import type {CategorizedFeedback, Feedback} from "@/model/feedback";
+import type {DataMode} from "@/model/data_mode";
 
 import path from "path";
 import fs from "fs";
 
 import baseUrl from "@/helpers/base_url";
-import { Metric } from "@/model/metric";
-import { ExpertEvaluationProgress } from "@/model/expert_evaluation_progress";
-import { ExpertEvaluationConfig } from "@/model/expert_evaluation_config";
-import { v4 as uuidv4 } from "uuid";
-import { ExpertEvaluationProgressStats } from "@/model/expert_evaluation_progress_stats";
+import {Metric} from "@/model/metric";
+import {ExpertEvaluationProgress} from "@/model/expert_evaluation_progress";
+import {ExpertEvaluationConfig} from "@/model/expert_evaluation_config";
+import {v4 as uuidv4} from "uuid";
+import {ExpertEvaluationProgressStats} from "@/model/expert_evaluation_progress_stats";
 
 /**
  * Splits the given data mode into its parts.
@@ -234,41 +234,40 @@ function jsonToExercise(json: any): Exercise {
   return exercise;
 }
 
-function jsonToExerciseAndSubmissionsAndFeedback(json: any): Exercise { //TODO remove
-  return json as Exercise;
-}
-
 export function addStructuredGradingInstructionsToFeedback(
-  exercise: Exercise,
+  config: ExpertEvaluationConfig | undefined,
 ) {
-  const submissions = exercise.submissions;
-  if (submissions) {
-    for (const submission of submissions) {
-      const feedback = submission.feedbacks;
+  if(config) {
+    config.exercises.forEach((exercise) => {
+      const submissions = exercise.submissions;
+      if (submissions) {
+        for (const submission of submissions) {
+          const feedback = submission.feedbacks;
 
-      if (feedback) {
-        const processedFeedbacks: CategorizedFeedback = {};
+          if (feedback) {
+            const processedFeedbacks: CategorizedFeedback = {};
 
-        Object.keys(feedback).forEach((category) => {
-            const categoryFeedback = feedback[category];
-                // Map over feedback and link structured grading instructions
-                processedFeedbacks[category] = feedback[category].map((feedbackItem) => {
-                    if (feedbackItem.structured_grading_instruction_id) {
-                        feedbackItem.structured_grading_instruction = exercise?.grading_criteria
-                            ?.flatMap((criteria) => criteria.structured_grading_instructions)
-                            .find(
-                                (instruction) =>
-                                    instruction.id === feedbackItem.structured_grading_instruction_id
-                            );
-                    }
-                    return feedbackItem;
-                });
+            Object.keys(feedback).forEach((category) => {
+              // Map over feedback and link structured grading instructions
+              processedFeedbacks[category] = feedback[category].map((feedbackItem) => {
+                if (feedbackItem.structured_grading_instruction_id) {
+                  feedbackItem.structured_grading_instruction = exercise?.grading_criteria
+                      ?.flatMap((criteria) => criteria.structured_grading_instructions)
+                      .find(
+                          (instruction) =>
+                              instruction.id === feedbackItem.structured_grading_instruction_id
+                      );
+                }
+                return feedbackItem;
+              });
 
-        });
-        submission.feedbacks = processedFeedbacks;
-      }
+            });
+            submission.feedbacks = processedFeedbacks;
+          }
         }
-    }
+      }
+    });
+  }
 }
 
 function jsonToSubmissions(json: any): Submission[] {
@@ -286,7 +285,7 @@ function jsonToSubmissions(json: any): Submission[] {
 function jsonToFeedbacks(json: any): Feedback[] {
   return json.submissions.flatMap((submissionJson: any) => {
     if (Array.isArray(submissionJson.feedbacks)) {
-      const feedbacks = submissionJson.feedbacks.map((feedbackJson: any) => {
+      return submissionJson.feedbacks.map((feedbackJson: any) => {
         const feedback = feedbackJson as Feedback;
         // exercise_id is not provided in the json for convenience, so we add it here
         feedback.exercise_id = json.id;
@@ -294,26 +293,13 @@ function jsonToFeedbacks(json: any): Feedback[] {
         feedback.submission_id = submissionJson.id;
         return feedback;
       });
-      return feedbacks;
     }
     return [];
   });
 }
 
-function jsonToMetrics(json: any): Metric[] {
-  return json.metrics;
-}
-
 export function getExercises(dataMode: DataMode, athenaOrigin: string): Exercise[] {
   return getAllExerciseJSON(dataMode, athenaOrigin).map(jsonToExercise);
-}
-
-export function getExercisesEager(dataMode: DataMode, athenaOrigin: string): Exercise[] {
-  return getAllExerciseJSON(dataMode, athenaOrigin).map(json => jsonToExerciseAndSubmissionsAndFeedback(json));
-}
-
-export function getExpertEvaluationExercisesEager(dataMode: DataMode, expertEvaluationId: string): Exercise[] {
-  return getEvaluationConfigJSON(dataMode, expertEvaluationId).exercises.map((json: any) => jsonToExerciseAndSubmissionsAndFeedback(json))
 }
 
 export function getSubmissions(
@@ -336,14 +322,6 @@ export function getFeedbacks(
     return jsonToFeedbacks(getExerciseJSON(dataMode, exerciseId, athenaOrigin));
   }
   return getAllExerciseJSON(dataMode, athenaOrigin).flatMap(jsonToFeedbacks);
-}
-
-export function getMetrics(
-  dataMode: DataMode,
-  expertEvaluationId: string,
-): Metric[] {
-
-  return jsonToMetrics(getEvaluationConfigJSON(dataMode, expertEvaluationId));
 }
 
 export function saveProgressToFileSync(
@@ -400,7 +378,6 @@ export function anonymizeFeedbackCategoriesAndShuffle(
       }
     }
   }
-
   // Save the mappings as a plain object in the config
   expertEvaluationConfig.mappings = mappings;
 }
@@ -536,21 +513,12 @@ export function getAnonymizedConfigFromFileSync(
   dataMode: DataMode,
   expertEvaluationId: string
 ): ExpertEvaluationConfig | undefined {
-  const configPath = path.join(
-    process.cwd(),
-    "data",
-    ...getDataModeParts(dataMode),
-    `evaluation_config_${expertEvaluationId}.json`
-  );
+  let config = getConfigFromFileSync(dataMode, expertEvaluationId);
 
-  if (!fs.existsSync(configPath)) {
-    console.log(`Could not find find expert evaluation ${expertEvaluationId}`);
-    return undefined;
+  if(config) {
+    delete config["expertIds"];
+    delete config["mappings"];
   }
-
-  const config: ExpertEvaluationConfig = JSON.parse(fs.readFileSync(configPath, "utf8"));
-  delete config["expertIds"];
-  delete config["mappings"];
 
   return config;
 }

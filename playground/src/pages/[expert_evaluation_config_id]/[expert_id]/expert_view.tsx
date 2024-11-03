@@ -31,7 +31,7 @@ function SideBySideExpertView() {
     const [currentExerciseIndex, setCurrentExerciseIndex] = useState<number>(0);
     const [metrics, setMetrics] = useState<Metric[]>([]);
     const [selectedValues, setSelectedValues] = useState<ExpertEvaluationProgress['selected_values']>({});
-    const [evaluationStarted, setEvaluationStarted] = useState<boolean>(false);
+    const [evaluationStarted, setEvaluationStarted] = useState<boolean>(true);
     const [hasStartedEvaluating, setHasStartedEvaluating] = useState<boolean>(true);
     const [isFinishedEvaluating, setIsFinishedEvaluating] = useState<boolean>(false);
     const [isNewExercise, setIsNewExercise] = useState<boolean>(false);
@@ -238,8 +238,7 @@ function SideBySideExpertView() {
 
     if (!evaluationStarted) {
         return <div className={"bg-white p-6 text-red-600"}>The expert evaluation (id={expert_evaluation_config_id})
-            has
-            not yet started.</div>;
+            has not yet started.</div>;
     }
 
     if (!hasStartedEvaluating) {
