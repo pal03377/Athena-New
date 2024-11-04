@@ -31,8 +31,6 @@ export default function EvaluationManagement() {
   const [expertEvaluationConfigs, setExpertEvaluationConfigs] = useState<ExpertEvaluationConfig[]>([]);
   const [selectedConfig, setSelectedConfig] = useState<ExpertEvaluationConfig>(createNewEvaluationConfig());
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
-  const [secret, setSecret] = useState<string>("");
-  const [isSecretValid, setIsSecretValid] = useState<boolean>(true);
   const dataMode = "expert_evaluation";
 
   useEffect(() => {
@@ -116,12 +114,8 @@ const saveExpertEvaluationConfig = (configToSave = selectedConfig) => {
       window.URL.revokeObjectURL(url);
     },
     onError: (error) => {
-      if (error.status === 401) {
-        setIsSecretValid(false);
-      } else {
         console.error("Download failed:", error.message);
         alert("An error occurred during download. Please try again later.");
-      }
     },
   });
 
@@ -131,12 +125,6 @@ const saveExpertEvaluationConfig = (configToSave = selectedConfig) => {
       saveExpertEvaluationConfig(updatedConfig);
     }
   };
-
-  //TODO
-  const updateExpertLinks = (newExpertIds: string[]) => {
-    const updatedConfig = updateSelectedConfig({ expertIds: newExpertIds });
-    saveExpertEvaluationConfig(updatedConfig);
-  }
 
   const resetChanges = () => {
     if (selectedConfig.id === "new") {
@@ -202,25 +190,6 @@ const saveExpertEvaluationConfig = (configToSave = selectedConfig) => {
         started={selectedConfig.started}
       />
 
-      {selectedConfig.started && (
-        <label className="flex flex-col mt-4">
-          <span className="text-lg font-bold mb-2">Playground Secret</span>
-          <input
-            type="text"
-            placeholder="Enter the playground secret to download the evaluation data."
-            className={`border ${isSecretValid ? "border-gray-300" : "border-red-500"} rounded-md p-2`}
-            value={secret}
-            onChange={(e) => {
-              setSecret(e.target.value);
-              setIsSecretValid(true);
-            }}
-          />
-          {!isSecretValid && (
-            <span className="text-xs text-red-500 mt-1">The secret is incorrect, please try again!</span>
-          )}
-        </label>
-      )}
-
       <div className="flex flex-row gap-2 mt-4">
         <button
           className={twMerge(
@@ -254,7 +223,7 @@ const saveExpertEvaluationConfig = (configToSave = selectedConfig) => {
               "bg-blue-500 text-white rounded-md p-2 hover:bg-blue-600",
               isExporting ? "opacity-75 cursor-not-allowed" : ""
             )}
-            onClick={() => downloadEvaluationData({ configId: selectedConfig.id, secret })}
+            onClick={() => downloadEvaluationData({ configId: selectedConfig.id })}
             disabled={isExporting}
           >
             {isExporting ? "Downloading..." : "Download Results"}

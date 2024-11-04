@@ -7,7 +7,6 @@ import path from "path";
 import fs from "fs";
 
 import baseUrl from "@/helpers/base_url";
-import {Metric} from "@/model/metric";
 import {ExpertEvaluationProgress} from "@/model/expert_evaluation_progress";
 import {ExpertEvaluationConfig} from "@/model/expert_evaluation_config";
 import {v4 as uuidv4} from "uuid";
@@ -182,24 +181,6 @@ function getExerciseJSON(
     return exerciseJson;
   }
   throw new Error(`Exercise ${exerciseId} not found`);
-}
-
-function getEvaluationConfigJSON(
-  dataMode: DataMode,
-  expertEvaluationId: string,
-): any {
-
-  const configPath = path.join(
-    process.cwd(),
-    "data",
-    ...getDataModeParts(dataMode),
-    `evaluation_config_${expertEvaluationId}.json`
-  );
-
-  if (fs.existsSync(configPath)) {
-    return JSON.parse(fs.readFileSync(configPath, "utf8"));
-  }
-  throw new Error(`Evaluation Config ${expertEvaluationId} not found`);
 }
 
 

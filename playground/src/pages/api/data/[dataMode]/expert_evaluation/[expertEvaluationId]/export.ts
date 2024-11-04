@@ -9,7 +9,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   const directoryPath = path.join(EXPORT_DIR, `evaluation_${expertEvaluationId}`);
   const filename = `evaluation_${expertEvaluationId}.zip`;
 
-  await exportHandler(req, res, directoryPath, filename);
+  await exportHandler(res, directoryPath, filename);
 }
 
 export default handler;

@@ -8,31 +8,16 @@ import { config } from "dotenv";
 config({ path: process.cwd() }); // Load .env variables
 
 const EXPORT_DIR = path.join(process.cwd(), "data");
-const SENSITIVE_PATHS = [
-  path.join(EXPORT_DIR, "expert_evaluation"),
-  // Add more sensitive paths as needed
-];
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { dataMode } = req.query as { dataMode: string };
   const directoryPath = path.join(EXPORT_DIR, ...getDataModeParts(dataMode));
   const filename = `${dataMode}.zip`;
 
-  await exportHandler(req, res, directoryPath, filename);
+  await exportHandler(res, directoryPath, filename);
 }
 
-export async function exportHandler(req: NextApiRequest, res: NextApiResponse, directoryPath: string, filename: string) {
-  const requiresAuth = SENSITIVE_PATHS.some(sensitivePath =>
-    directoryPath.startsWith(sensitivePath) || sensitivePath.startsWith(directoryPath)
-  );
-
-  if (requiresAuth) {
-    const authHeader = req.headers.authorization;
-    if (authHeader !== process.env.PLAYGROUND_SECRET) {
-      return res.status(401).json({ error: "Unauthorized access" });
-    }
-  }
-
+export async function exportHandler(res: NextApiResponse, directoryPath: string, filename: string) {
   if (!fs.existsSync(directoryPath)) {
     return res.status(404).json({ error: "Directory not found" });
   }
