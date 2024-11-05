@@ -1,15 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import Confetti from 'react-confetti';
 import background_image from "@/assets/evaluation_backgrounds/congratulations1.webp";
 
+const CongratulationScreen: React.FC = () => {
+    const [windowSize, setWindowSize] = useState({width: window.innerWidth, height: window.innerHeight});
 
-interface CongratulationScreenProps {
-    onRestart: () => void;
-}
-
-const CongratulationScreen: React.FC<CongratulationScreenProps> = ({ onRestart }) => {
-    const [windowSize, setWindowSize] = useState({ width: window.innerWidth, height: window.innerHeight });
-    //TODO remove button below
 
     useEffect(() => {
         const handleResize = () => {
@@ -24,12 +19,13 @@ const CongratulationScreen: React.FC<CongratulationScreenProps> = ({ onRestart }
     }, []);
 
     return (
-        <div className="fixed inset-0 bg-congratulation-bg bg-cover bg-center bg-black bg-opacity-75 flex items-center justify-center z-50"
-        style={{
-      backgroundImage: `url(${background_image.src})`, // Use the same path as in tailwind.config.js
-      backgroundSize: 'cover',
-      backgroundPosition: 'center',
-    }}>
+        <div
+            className="fixed inset-0 bg-congratulation-bg bg-cover bg-center bg-black bg-opacity-75 flex items-center justify-center z-50"
+            style={{
+                backgroundImage: `url(${background_image.src})`,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+            }}>
             {/* Confetti effect */}
             <Confetti
                 width={windowSize.width}
@@ -43,12 +39,6 @@ const CongratulationScreen: React.FC<CongratulationScreenProps> = ({ onRestart }
                 <p className="text-lg mb-6">
                     You have successfully completed the expert evaluation. Thank you for your hard work!
                 </p>
-                <button
-                    className="bg-green-500 text-white px-6 py-3 rounded-lg text-lg hover:bg-green-600"
-                    onClick={onRestart}
-                >
-                    Go Back
-                </button>
             </div>
         </div>
     );

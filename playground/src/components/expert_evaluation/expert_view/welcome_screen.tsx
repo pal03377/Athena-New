@@ -2,12 +2,14 @@ import React, {useState} from 'react';
 import TutorialPopup from "@/components/expert_evaluation/expert_view/tutorial_popup";
 import background_image from "@/assets/evaluation_backgrounds/welcome-screen.webp";
 import {PrimaryButton} from "@/components/expert_evaluation/expert_evaluation_buttons";
+import {Exercise} from "@/model/exercise";
 
 interface WelcomeScreenProps {
+    exercise: Exercise;
     onClose: () => void;
 }
 
-const WelcomeScreen: React.FC<WelcomeScreenProps> = ({onClose}) => {
+const WelcomeScreen: React.FC<WelcomeScreenProps> = ({onClose, exercise}) => {
     const [isTutorialOpen, setTutorialOpen] = useState(false);
 
     const closeTutorial = () => {
@@ -39,7 +41,9 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({onClose}) => {
                 />
             </div>
             <TutorialPopup isOpen={isTutorialOpen}
-                           onClose={closeTutorial}/>
+                           onClose={closeTutorial}
+                           disableCloseOnOutsideClick={true}
+                           exercise={exercise}/>
         </div>
     );
 };

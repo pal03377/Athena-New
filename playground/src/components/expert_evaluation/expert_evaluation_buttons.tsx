@@ -36,6 +36,7 @@ interface SecondaryButtonProps {
     isInline?: boolean;
     className?: string;
     text: string;
+    isDisabled?: boolean;
 }
 
 export const SecondaryButton: React.FC<SecondaryButtonProps> = ({
@@ -43,10 +44,12 @@ export const SecondaryButton: React.FC<SecondaryButtonProps> = ({
                                                                     isInline = false,
                                                                     className = '',
                                                                     text,
+                                                                    isDisabled
                                                                 }) => (
     <button
         onClick={onClick} // Will only trigger if `onClick` is provided
         className={`${buttonSecondary} ${isInline ? 'inline-block' : ''} ${className}`}
+        disabled={isDisabled}
     >
         {text}
     </button>

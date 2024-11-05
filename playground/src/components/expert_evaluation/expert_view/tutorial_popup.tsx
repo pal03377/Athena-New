@@ -1,4 +1,3 @@
-// src/components/ExerciseDetailPopup.tsx
 import React, {useState} from 'react';
 import Popup from "@/components/expert_evaluation/expert_view/popup";
 import exerciseDetails from "@/assets/evaluation_tutorial/exercise_details.gif";
@@ -8,27 +7,23 @@ import metricsExplanation from "@/assets/evaluation_tutorial/metrics-explanation
 import viewNext from "@/assets/evaluation_tutorial/view-next.gif";
 import continueLater from "@/assets/evaluation_tutorial/continue_later.gif";
 import {
-    SecondaryButton,
     InfoIconButton,
-    NextButton
+    NextButton,
+    PrimaryButton,
+    SecondaryButton
 } from "@/components/expert_evaluation/expert_evaluation_buttons";
+import {Exercise} from "@/model/exercise";
+import ExerciseDetail from "@/components/details/exercise_detail";
 
-
-interface TutorialPopupProps {
-    isOpen: boolean;
-    onClose: () => void;
-}
-
-const tutorialSteps = [
+const baseTutorialSteps = [
     {
         image: exerciseDetails.src,
         description: (
             <>
                 1. Read the
-                <SecondaryButton text={'📊 Metric Details'} isInline={true} className="mx-1"/>
+                <SecondaryButton text={'📄 Exercise Details'} isInline={true} className="mx-1"/>
             </>
         ),
-
     },
     {
         image: readSubmission.src,
@@ -45,7 +40,7 @@ const tutorialSteps = [
                 4. If unsure what a metric means, press the
                 <InfoIconButton className="mx-1"/>
                 or look at the
-                <SecondaryButton text={'📄 Exercise Details'} isInline={true} className="mx-1"/>
+                <SecondaryButton text={'📊 Metric Details'} isInline={true} className="mx-1"/>
             </>
         ),
     },
@@ -68,8 +63,33 @@ const tutorialSteps = [
     },
 ];
 
-const TutorialPopup: React.FC<TutorialPopupProps> = ({isOpen, onClose}) => {
+interface TutorialPopupProps {
+    isOpen: boolean;
+    onClose: () => void;
+    disableCloseOnOutsideClick?: boolean;
+    exercise?: Exercise;
+}
+
+const TutorialPopup: React.FC<TutorialPopupProps> = ({isOpen, onClose, disableCloseOnOutsideClick, exercise}) => {
     const [currentStep, setCurrentStep] = useState(0);
+
+    // If the tutorial was opened in welcome window, add a last step involving the first exercise
+    const tutorialSteps = exercise
+        ? [
+            ...baseTutorialSteps,
+            {
+                image: "",
+                description: (
+                    <>
+                    <div className="text-left">
+                    Now you are ready to start the evaluation! Read the description of the first exercise
+
+                        <ExerciseDetail exercise={exercise} hideDisclosure={true} openedInitially={true}/>
+                    </div>
+                        </>),
+            },
+        ]
+        : baseTutorialSteps;
 
     const handleNext = () => {
         if (currentStep < tutorialSteps.length - 1) {
@@ -85,34 +105,31 @@ const TutorialPopup: React.FC<TutorialPopupProps> = ({isOpen, onClose}) => {
 
     const {image, description} = tutorialSteps[currentStep];
 
+    const isLastStep = currentStep === tutorialSteps.length - 1;
     return (
-        <Popup isOpen={isOpen} onClose={onClose} title="Evaluation Tutorial">
+        <Popup isOpen={isOpen} onClose={onClose} title="Evaluation Tutorial"
+               disableCloseOnOutsideClick={disableCloseOnOutsideClick}>
             <div className="text-center">
                 {/* Display the current GIF */}
-                <img src={image} alt={`Tutorial Step ${currentStep + 1}`} className="w-full h-auto mb-4"/>
+                {image && <img src={image} alt={`Tutorial Step ${currentStep + 1}`} className="w-full h-auto mb-4"/>}
 
                 {/* Render the description directly, which may include text and button */}
-                <p className="text-lg mb-4">
+                <div className={"text-lg mb-4"}>
                     {description}
-                </p>
+                </div>
 
                 {/* Navigation buttons */}
                 <div className="flex justify-between mt-4">
-                    <button
-                        className="bg-gray-300 text-black px-4 py-2 rounded disabled:opacity-50"
+                    <SecondaryButton
+                        text = "Previous"
                         onClick={handlePrevious}
-                        disabled={currentStep === 0}
-                    >
-                        Previous
-                    </button>
+                        isDisabled={currentStep === 0}
+                    />
                     <span className="text-lg">{`${currentStep + 1} / ${tutorialSteps.length}`}</span>
-                    <button
-                        className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 disabled:opacity-50"
-                        onClick={handleNext}
-                        disabled={currentStep === tutorialSteps.length - 1}
-                    >
-                        Next
-                    </button>
+                    <PrimaryButton
+                        onClick={isLastStep ? onClose : handleNext}
+                        text = {isLastStep ? 'Start Evaluation' : 'Next ➡️'}
+                    />
                 </div>
             </div>
         </Popup>

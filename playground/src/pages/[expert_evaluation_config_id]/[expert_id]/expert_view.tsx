@@ -58,6 +58,7 @@ function SideBySideExpertView() {
                             setCurrentExerciseIndex(expertEvaluationProgress.current_exercise_index);
                             setSelectedValues(expertEvaluationProgress.selected_values);
                             setHasStartedEvaluating(expertEvaluationProgress.has_started_evaluating);
+                            setIsFinishedEvaluating(expertEvaluationProgress.is_finished_evaluating);
 
                         } catch (error) {
                             console.error('Error loading expert evaluation progress: ', error);
@@ -160,34 +161,23 @@ function SideBySideExpertView() {
         }
     };
 
-
     const handleWelcomeClose = () => {
         setHasStartedEvaluating(false);
         saveProgress();
-        window.close();
     };
 
     const handleNextExercise = () => {
         setIsNewExercise(false);
-        window.close();
     }
 
     const handleCloseContinueLater = () => {
         setContinueLater(false);
-        window.close();
     }
 
     const handleOpenContinueLater = () => {
         saveProgress();
         setContinueLater(true);
     }
-
-    //TODO remove
-    const handleRestart = () => {
-        // This will reload the page or reset the evaluation state
-        handlePrevious();
-        window.location.reload();
-    };
 
     const saveProgress = () => {
         if (expert_evaluation_config_id && expert_id) {
@@ -197,6 +187,7 @@ function SideBySideExpertView() {
                 current_exercise_index: currentExerciseIndex,
                 selected_values: selectedValues,
                 has_started_evaluating: true,
+                is_finished_evaluating: isFinishedEvaluating,
             };
             saveExpertEvaluationProgress(dataMode, expert_evaluation_config_id, expert_id, progress);
         }
@@ -242,7 +233,7 @@ function SideBySideExpertView() {
     }
 
     if (!hasStartedEvaluating) {
-        return <WelcomeScreen onClose={handleWelcomeClose}/>;
+        return <WelcomeScreen exercise={currentExercise} onClose={handleWelcomeClose}/>;
     }
 
     if (isContinueLater) {
@@ -261,7 +252,7 @@ function SideBySideExpertView() {
     }
 
     if (isFinishedEvaluating) {
-        return <CongratulationScreen onRestart={handleRestart}/>;
+        return <CongratulationScreen/>;
     }
 
     if (currentExercise && currentSubmission && currentSubmission.feedbacks) {
