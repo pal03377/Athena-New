@@ -3,36 +3,17 @@ import DefineExperiment from "./define_experiment";
 import type {ModuleConfiguration} from "./configure_modules";
 import ConfigureModules from "./configure_modules";
 
-import {useEffect, useState} from "react";
+import {useState} from "react";
 import ConductExperiment from "./conduct_experiment";
 import EvaluationManagement from "@/components/view_mode/evaluation_mode/expert_evaluation/evaluation_management";
-import {authorizeExpertEvaluationManagement} from "@/hooks/playground/expert_evaluation_management";
 
-interface EvaluationModeProps {
-    athenaSecret: string;
-}
-
-export default function EvaluationMode({athenaSecret}: EvaluationModeProps) {
+export default function EvaluationMode() {
     const [experiment, setExperiment] = useState<Experiment | undefined>(
         undefined
     );
     const [moduleConfigurations, setModuleConfigurations] = useState<
         ModuleConfiguration[] | undefined
     >(undefined);
-
-    const [isSecretValid, setIsSecretValid] = useState<boolean>(true);
-
-    useEffect(() => {
-        const authorize = async () => {
-            const response = await authorizeExpertEvaluationManagement(athenaSecret);
-            if (response == 401) {
-                setIsSecretValid(false);
-            } else {
-                setIsSecretValid(true);
-            }
-        };
-        authorize();
-    }, [athenaSecret]);
 
     return (
         <>
@@ -59,12 +40,8 @@ export default function EvaluationMode({athenaSecret}: EvaluationModeProps) {
                     )}
                 </>
             )}
-
-            {isSecretValid && (
-                <>
-                    <h2 className="text-4xl font-bold text-white mb-4">Expert Evaluation</h2>
-                    <EvaluationManagement/>
-                </>)}
+            <h2 className="text-4xl font-bold text-white mb-4">Expert Evaluation</h2>
+            <EvaluationManagement/>
         </>
     );
 }

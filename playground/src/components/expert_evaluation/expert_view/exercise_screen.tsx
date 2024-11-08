@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import ExerciseDetailPopup from "@/components/expert_evaluation/expert_view/exercise_detail_popup";
 import {Exercise} from "@/model/exercise";
 import {SecondaryButton} from "@/components/expert_evaluation/expert_evaluation_buttons";
-import background_image from "@/assets/evaluation_backgrounds/exercise.webp";
+import background_image from "@/assets/evaluation_backgrounds/exercise.jpeg";
 
 interface ExerciseScreenProps {
   onCloseExerciseDetail: () => void;
