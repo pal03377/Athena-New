@@ -7,11 +7,8 @@ type EvaluationConfigSelectorProps = {
   expertEvaluationConfigs: ExpertEvaluationConfig[];
 };
 
-export default function EvaluationConfigSelector({
-  selectedConfigId,
-  setSelectedConfigId,
-  expertEvaluationConfigs,
-}: EvaluationConfigSelectorProps) {
+export default function EvaluationConfigSelector(evaluationConfigSelectorProps: EvaluationConfigSelectorProps) {
+  const { selectedConfigId, setSelectedConfigId, expertEvaluationConfigs } = evaluationConfigSelectorProps;
   return (
     <section className="flex flex-col">
       <span className="text-lg font-bold mb-2">Evaluation</span>

@@ -9,8 +9,9 @@ type ExerciseImportProps = {
   disabled: boolean;
 };
 
-export default function ExerciseImport(
-  { exercises, setExercises, disabled }:ExerciseImportProps) {
+export default function ExerciseImport(exerciseImportProps: ExerciseImportProps) {
+  const { exercises, setExercises, disabled } = exerciseImportProps;
+
   const handleExerciseImport = async (fileContents: string[]) => {
     const importedExercises = fileContents.map((fileContent) => JSON.parse(fileContent) as Exercise);
     setExercises([...exercises, ...importedExercises]);
@@ -57,7 +58,7 @@ export default function ExerciseImport(
         {/* Import New Exercises Button */}
         {!disabled && (
           <label className="bg-green-500 text-white rounded-md p-2 hover:bg-green-600 flex items-center gap-2 cursor-pointer">
-            <FontAwesomeIcon icon={faPlus}/>
+            <FontAwesomeIcon icon={faPlus} />
             Import Exercises
             <input
               type="file"

@@ -15,11 +15,11 @@ type ExpertLinksProps = {
 
 export default function ExpertLinks(props: ExpertLinksProps) {
   const { expertIds, setExpertIds, started, configId } = props;
+
   const [copiedLink, setCopiedLink] = useState<string | null>(null);
   const [progressStats, setProgressStats] = useState<ExpertEvaluationProgressStats>();
   const [loading, setLoading] = useState(false);
 
-  // Fetch progress stats with a minimum delay for feedback
   const updateProgressStats = async () => {
     setLoading(true);
     const minimumDelay = new Promise((resolve) => setTimeout(resolve, 1000));

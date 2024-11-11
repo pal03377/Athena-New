@@ -1,7 +1,7 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import ExerciseDetailPopup from "@/components/expert_evaluation/expert_view/exercise_detail_popup";
-import {Exercise} from "@/model/exercise";
-import {SecondaryButton} from "@/components/expert_evaluation/expert_evaluation_buttons";
+import { Exercise } from "@/model/exercise";
+import { SecondaryButton } from "@/components/expert_evaluation/expert_evaluation_buttons";
 import background_image from "@/assets/evaluation_backgrounds/exercise.jpeg";
 
 interface ExerciseScreenProps {
@@ -12,16 +12,16 @@ interface ExerciseScreenProps {
   totalExercises: number;
 }
 
-const ExerciseScreen: React.FC<ExerciseScreenProps> = ({
-                                                         onCloseExerciseDetail,
-                                                         onOpenContinueLater,
-                                                         exercise,
-                                                         currentExerciseIndex,
-                                                         totalExercises
-                                                       }) => {
+export default function ExerciseScreen(exerciseScreenProps: ExerciseScreenProps) {
+  const {
+    onCloseExerciseDetail,
+    onOpenContinueLater,
+    exercise,
+    currentExerciseIndex,
+    totalExercises,
+  } = exerciseScreenProps;
   const [isExerciseDetailOpen, setExerciseDetailOpen] = useState(false);
 
-  // Function to close the ExerciseDetailPopup
   const closeExerciseDetail = () => {
     setExerciseDetailOpen(false);
     onCloseExerciseDetail();
@@ -29,11 +29,11 @@ const ExerciseScreen: React.FC<ExerciseScreenProps> = ({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50"
-         style={{
-           backgroundImage: `url(${background_image.src})`, // Use the same path as in tailwind.config.js
-           backgroundSize: 'cover',
-           backgroundPosition: 'center',
-         }}
+      style={{
+        backgroundImage: `url(${background_image.src})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+      }}
     >
       <div className="bg-white p-8 rounded-lg shadow-lg max-w-lg w-full text-center">
         <h1 className="text-4xl font-bold mb-4">You have
@@ -68,5 +68,3 @@ const ExerciseScreen: React.FC<ExerciseScreenProps> = ({
     </div>
   );
 };
-
-export default ExerciseScreen;

@@ -1,4 +1,4 @@
-import {Submission} from "@/model/submission";
+import { Submission } from "@/model/submission";
 
 export type ExerciseType = "text" | "programming" | "modeling";
 

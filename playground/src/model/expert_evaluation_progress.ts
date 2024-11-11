@@ -1,8 +1,7 @@
-
 export type ExpertEvaluationProgress = {
-    current_submission_index: number;
-    current_exercise_index: number;
-    selected_values: {
+  current_submission_index: number;
+  current_exercise_index: number;
+  selected_values: {
     [exerciseId: string]: { // Group by exercise ID
       [submissionId: string]: { // Group by submission ID within each exercise
         [feedbackType: string]: { // Group by feedback type
@@ -11,6 +10,6 @@ export type ExpertEvaluationProgress = {
       };
     };
   };
-    has_started_evaluating: boolean;
-    is_finished_evaluating: boolean;
+  has_started_evaluating: boolean;
+  is_finished_evaluating: boolean;
 };

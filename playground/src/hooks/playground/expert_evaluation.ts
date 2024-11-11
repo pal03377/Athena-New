@@ -3,7 +3,7 @@ import { useMutation, UseMutationOptions } from "react-query";
 
 export default function useDownloadExpertEvaluationData(
   options: Omit<
-    UseMutationOptions<Blob, { status: number; message: string }, { configId: string}>,
+    UseMutationOptions<Blob, { status: number; message: string }, { configId: string }>,
     "mutationFn"
   > = {}
 ) {

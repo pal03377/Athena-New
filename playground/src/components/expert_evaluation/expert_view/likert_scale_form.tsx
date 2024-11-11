@@ -1,10 +1,10 @@
 import React from 'react';
 import SingleChoiceLikertScale from "@/components/expert_evaluation/expert_view/likert_scale";
 import TextSubmissionDetail from "@/components/details/submission_detail/text";
-import type {TextSubmission} from "@/model/submission";
-import {CategorizedFeedback} from "@/model/feedback";
-import {Exercise} from "@/model/exercise";
-import {Metric} from "@/model/metric";
+import type { TextSubmission } from "@/model/submission";
+import { CategorizedFeedback } from "@/model/feedback";
+import { Exercise } from "@/model/exercise";
+import { Metric } from "@/model/metric";
 
 interface LikertScaleFormProps {
     submission: TextSubmission;
@@ -12,7 +12,7 @@ interface LikertScaleFormProps {
     feedback: CategorizedFeedback;
     metrics: Metric[];
     selectedValues: { // Selected values for each exercise, submission, and feedback type
-        [exerciseId: string]: { //TODO define somewhere
+        [exerciseId: string]: {
             [submissionId: string]: {
                 [feedbackType: string]: {
                     [metricId: string]: number; // The Likert scale value for a metric
@@ -25,15 +25,17 @@ interface LikertScaleFormProps {
 }
 
 
-const LikertScaleForm: React.FC<LikertScaleFormProps> = ({
-                                                             submission,
-                                                             exercise,
-                                                             feedback,
-                                                             metrics,
-                                                             selectedValues,
-                                                             onLikertValueChange,
-                                                             isMarkMissingValue
-                                                         }) => {
+export default function LikertScaleForm(likertScaleFormProps: LikertScaleFormProps) {
+    const {
+        submission,
+        exercise,
+        feedback,
+        metrics,
+        selectedValues,
+        onLikertValueChange,
+        isMarkMissingValue,
+    } = likertScaleFormProps;
+
     if (!exercise || !submission) {
         return <div>Loading...</div>;
     }
@@ -84,5 +86,3 @@ const LikertScaleForm: React.FC<LikertScaleFormProps> = ({
         </div>
     );
 };
-
-export default LikertScaleForm;

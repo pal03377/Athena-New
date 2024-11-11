@@ -14,9 +14,9 @@ import { ExpertEvaluationProgressStats } from "@/model/expert_evaluation_progres
 
 /**
  * Splits the given data mode into its parts.
- *
+ * 
  * @param dataMode - the data mode to split
- *
+ * 
  * @returns the parts of the given data mode
  *  - ["example"] for "example"
  *  - ["evaluation"] for "evaluation"
@@ -95,7 +95,7 @@ function replaceJsonPlaceholders(
 /**
  * Adds the exercise type to all submissions and feedbacks in the given json.
  * This is only for the playground, because the exercise type is not provided in the json for convenience.
- *
+ * 
  * @param json - the json to add the exercise type to
  * @returns the json with the exercise type added to all submissions and feedbacks
  */
@@ -119,7 +119,7 @@ function addExerciseTypeToSubmissionsAndFeedbacks(json: any): any {
 
 /**
  * Removes all null values from the given json.
- *
+ * 
  * @param json - the json to remove the null values from
  * @param recursive - whether to remove null values recursively
  * @returns the json without null values
@@ -183,13 +183,12 @@ function getExerciseJSON(
   throw new Error(`Exercise ${exerciseId} not found`);
 }
 
-
 function getAllExerciseJSON(dataMode: DataMode, athenaOrigin: string): any[] {
   // find in cwd/data/<dataMode> all exercise-*.json
   // or in cwd/data/evaluation/<custom> all exercise-*.json if dataMode is evaluation-<custom>
   const parts = getDataModeParts(dataMode);
   const exercisesDir = path.join(process.cwd(), "data", ...parts);
-
+  
   // Check if the directory exists
   if (!fs.existsSync(exercisesDir)) {
     return [];
@@ -327,7 +326,6 @@ export function saveProgressToFileSync(
 export function anonymizeFeedbackCategoriesAndShuffle(
   expertEvaluationConfig: ExpertEvaluationConfig
 ) {
-  // Initialize mappings as a plain object
   const mappings: { [key: string]: string } = {};
 
   // Iterate over exercises
@@ -537,4 +535,3 @@ export function getAllConfigsFromFilesSync(
 
   return configs;
 }
-

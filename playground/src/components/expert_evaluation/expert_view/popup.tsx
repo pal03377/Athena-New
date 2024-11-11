@@ -1,23 +1,24 @@
-import React, {ReactNode} from 'react';
+import React, { ReactNode } from 'react';
 
 interface PopupProps {
-  isOpen: boolean;
-  onClose: () => void;
-  title: string;
-  children: ReactNode;
-  disableCloseOnOutsideClick?: boolean;
+    isOpen: boolean;
+    onClose: () => void;
+    title: string;
+    children: ReactNode;
+    disableCloseOnOutsideClick?: boolean;
 }
 
-const Popup: React.FC<PopupProps> = ({isOpen, onClose, title, children, disableCloseOnOutsideClick}) => {
-  if (!isOpen) return null;
+export default function Popup(popupProps: PopupProps) {
+    const { isOpen, onClose, title, children, disableCloseOnOutsideClick } = popupProps;
+    if (!isOpen) return null;
 
     return (
         <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center p-6"
-             onClick={() => {
-                 if (!disableCloseOnOutsideClick) {
-                     onClose();
-                 }
-             }}
+            onClick={() => {
+                if (!disableCloseOnOutsideClick) {
+                    onClose();
+                }
+            }}
         >
             <div
                 className="bg-white p-6 rounded-lg shadow-lg max-w-7xl max-h-full relative"
@@ -40,5 +41,3 @@ const Popup: React.FC<PopupProps> = ({isOpen, onClose, title, children, disableC
         </div>
     );
 };
-
-export default Popup;

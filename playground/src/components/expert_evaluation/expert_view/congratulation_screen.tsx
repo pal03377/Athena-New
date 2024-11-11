@@ -1,10 +1,9 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import Confetti from 'react-confetti';
 import background_image from "@/assets/evaluation_backgrounds/congratulations.jpeg";
 
-const CongratulationScreen: React.FC = () => {
-    const [windowSize, setWindowSize] = useState({width: window.innerWidth, height: window.innerHeight});
-
+export default function CongratulationScreen() {
+  const [windowSize, setWindowSize] = useState({ width: window.innerWidth, height: window.innerHeight });
 
   useEffect(() => {
     const handleResize = () => {
@@ -22,7 +21,7 @@ const CongratulationScreen: React.FC = () => {
     <div
       className="fixed inset-0 bg-congratulation-bg bg-cover bg-center bg-black bg-opacity-75 flex items-center justify-center z-50"
       style={{
-        backgroundImage: `url(${background_image.src})`, // Use the same path as in tailwind.config.js
+        backgroundImage: `url(${background_image.src})`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
       }}>
@@ -43,5 +42,3 @@ const CongratulationScreen: React.FC = () => {
     </div>
   );
 };
-
-export default CongratulationScreen;

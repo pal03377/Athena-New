@@ -1,8 +1,7 @@
 import React from 'react';
-import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import {faCircleInfo} from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCircleInfo } from '@fortawesome/free-solid-svg-icons';
 
-// Base button styles
 const buttonBase = "px-4 py-2 rounded focus:outline-none transition-all";
 const buttonPrimary = `${buttonBase} bg-blue-500 text-white hover:bg-blue-600`;
 const buttonSecondary = `${buttonBase} bg-gray-300 text-gray-700 hover:bg-gray-400`;
@@ -16,19 +15,15 @@ interface NextButtonProps {
     className?: string;
 }
 
-export const NextButton: React.FC<NextButtonProps> = ({
-                                                          onClick,
-                                                          isFinish = false,
-                                                          isInline = false,
-                                                          className = '',
-                                                      }) => (
-    <button
+export function NextButton(nextButtonProps: NextButtonProps) {
+    const { onClick, isFinish, isInline, className } = nextButtonProps;
+    return <button
         onClick={onClick}
         className={`${isFinish ? buttonFinish : buttonPrimary}  ${isInline ? 'inline-block' : 'w-full'} ${className}`}
     >
         {isFinish ? 'Finish 🏁' : 'Next ➡️'}
     </button>
-);
+}
 
 
 interface SecondaryButtonProps {
@@ -39,21 +34,17 @@ interface SecondaryButtonProps {
     isDisabled?: boolean;
 }
 
-export const SecondaryButton: React.FC<SecondaryButtonProps> = ({
-                                                                    onClick,
-                                                                    isInline = false,
-                                                                    className = '',
-                                                                    text,
-                                                                    isDisabled
-                                                                }) => (
-    <button
-        onClick={onClick} // Will only trigger if `onClick` is provided
+export function SecondaryButton(secondaryButtonProps: SecondaryButtonProps) {
+    const { onClick, isInline, className, text, isDisabled } = secondaryButtonProps;
+    return <button
+        onClick={onClick}
         className={`${buttonSecondary} ${isInline ? 'inline-block' : ''} ${className}`}
         disabled={isDisabled}
     >
         {text}
     </button>
-);
+}
+
 
 interface PrimaryButtonProps {
     onClick?: () => void;
@@ -63,33 +54,31 @@ interface PrimaryButtonProps {
     text: string;
 }
 
-export const PrimaryButton: React.FC<PrimaryButtonProps> = ({
-                                                                onClick,
-                                                                isInline = false,
-                                                                isDisabled = false,
-                                                                className = '',
-                                                                text,
-                                                            }) => (
-    <button
-        onClick={onClick} // Will only trigger if `onClick` is provided
+export function PrimaryButton(primaryButtonProps: PrimaryButtonProps) {
+    const { onClick, isInline, isDisabled, className, text } = primaryButtonProps;
+    return <button
+        onClick={onClick}
         className={`${buttonPrimary} ${isInline ? 'inline-block' : ''} ${className}`}
         disabled={isDisabled}
     >
         {text}
     </button>
-);
+}
 
 
-export const InfoIconButton: React.FC<{ onClick?: () => void; className?: string }> = ({
-                                                                                           onClick,
-                                                                                           className = '',
-                                                                                       }) => (
-    <span
+interface InfoIconButtonProps {
+    onClick?: () => void;
+    className?: string;
+}
+
+export function InfoIconButton(infoIconButtonProps: InfoIconButtonProps) {
+    const { onClick, className } = infoIconButtonProps;
+    return <span
         onClick={onClick}
         className={`text-gray-400 cursor-pointer hover:text-gray-600 ${className}`}
         role="img"
         aria-label="info"
     >
-    <FontAwesomeIcon icon={faCircleInfo}/>
-  </span>
-);
+        <FontAwesomeIcon icon={faCircleInfo} />
+    </span>
+}

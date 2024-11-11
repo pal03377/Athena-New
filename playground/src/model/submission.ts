@@ -1,5 +1,5 @@
 import type { ExerciseType } from "./exercise";
-import {CategorizedFeedback} from "@/model/feedback";
+import { CategorizedFeedback } from "@/model/feedback";
 
 type SubmissionBase = {
     id: number;

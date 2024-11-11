@@ -6,7 +6,7 @@ import ModuleRequests from "@/components/view_mode/module_requests";
 import EvaluationMode from "@/components/view_mode/evaluation_mode";
 
 export default function Playground() {
-  const { viewMode} = useBaseInfo();
+  const { viewMode } = useBaseInfo();
 
   return (
     <main className="flex min-h-screen flex-col p-24">

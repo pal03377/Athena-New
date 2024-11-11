@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { v4 as uuidv4 } from 'uuid'; // Import the uuid function
+import { v4 as uuidv4 } from 'uuid';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit, faPlus, faSave, faTrash } from "@fortawesome/free-solid-svg-icons";
 import ReactMarkdown from 'react-markdown';
@@ -12,22 +12,23 @@ type MetricsFormProps = {
   disabled: boolean;
 };
 
-export default function MetricsForm({ metrics, setMetrics, disabled }: MetricsFormProps) {
+export default function MetricsForm(metricsFormProps: MetricsFormProps) {
+  const { metrics, setMetrics, disabled } = metricsFormProps;
+
   const [editIndex, setEditIndex] = useState<number | null>(null);
   const [editingMetric, setEditingMetric] = useState<Metric>({
-    id: "", // Add id attribute here
+    id: "",
     title: "",
     summary: "",
     description: "",
   });
   const [newMetric, setNewMetric] = useState<Metric>({
-    id: "", // Add id attribute here
+    id: "",
     title: "",
     summary: "",
     description: "",
   });
 
-  // Handle input changes for both editing and adding metrics
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
     isEditing: boolean = false
@@ -46,24 +47,21 @@ export default function MetricsForm({ metrics, setMetrics, disabled }: MetricsFo
     }
   };
 
-  // Add new metric
   const addMetric = () => {
     if (!newMetric.title.trim() || !newMetric.summary.trim() || !newMetric.description.trim()) {
-      return; // Prevent adding empty metrics
+      return;
     }
 
-    const metricWithId = { ...newMetric, id: uuidv4() }; // Add uuidv4 for unique id
+    const metricWithId = { ...newMetric, id: uuidv4() };
     setMetrics([...metrics, metricWithId]);
     setNewMetric({ id: "", title: "", summary: "", description: "" }); // Reset form
   };
 
-  // Start editing a metric in place
   const startEditMetric = (index: number) => {
     setEditIndex(index);
     setEditingMetric(metrics[index]);
   };
 
-  // Save the edited metric
   const saveMetric = () => {
     if (editIndex !== null) {
       const updatedMetrics = metrics.map((metric, index) =>
@@ -74,16 +72,15 @@ export default function MetricsForm({ metrics, setMetrics, disabled }: MetricsFo
     }
   };
 
-  // Remove a metric by index
   const removeMetric = (index: number) => {
     setMetrics(metrics.filter((_, i) => i !== index));
   };
 
   const inputDisabledStyle = disabled
     ? "bg-gray-100 text-gray-500 cursor-not-allowed"
-    : ""; // Style for disabled input fields
+    : "";
 
-  const buttonDisabledStyle = disabled ? "hidden" : ""; // Style for disabled buttons
+  const buttonDisabledStyle = disabled ? "hidden" : "";
 
   return (
     <section className="flex flex-col">

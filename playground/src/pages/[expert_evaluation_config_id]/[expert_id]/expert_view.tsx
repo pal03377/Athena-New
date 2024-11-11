@@ -17,7 +17,7 @@ import WelcomeScreen from "@/components/expert_evaluation/expert_view/welcome_sc
 import ExerciseScreen from "@/components/expert_evaluation/expert_view/exercise_screen";
 import ContinueLaterScreen from "@/components/expert_evaluation/expert_view/continue_later_screen";
 
-function SideBySideExpertView() {
+export default function SideBySideExpertView() {
   const router = useRouter();
   const { expert_evaluation_config_id, expert_id } = router.query as {
     expert_evaluation_config_id: string;
@@ -84,12 +84,11 @@ function SideBySideExpertView() {
 
   const isExerciseComplete = (): boolean => {
     const exerciseData = selectedValues[currentExercise.id];
-    if (!exerciseData) return false; // No data for this exercise
+    if (!exerciseData) return false;
 
     if (currentSubmission) {
       const submissionData = exerciseData[currentSubmission.id];
-      if (!submissionData) return false; // No data for this submission
-
+      if (!submissionData) return false;
       const currentFeedbacks = currentSubmission.feedbacks;
 
       if (currentFeedbacks) {
@@ -180,19 +179,19 @@ function SideBySideExpertView() {
     setContinueLater(true);
   }
 
-const saveProgress = () => {
+  const saveProgress = () => {
     if (expert_evaluation_config_id && expert_id) {
-        setHasStartedEvaluating(true);
-        const progress: ExpertEvaluationProgress = {
-            current_submission_index: currentSubmissionIndex,
-            current_exercise_index: currentExerciseIndex,
-            selected_values: selectedValues,
-            has_started_evaluating: true,
-            is_finished_evaluating: isFinishedEvaluating,
-        };
-        saveExpertEvaluationProgress(dataMode, expert_evaluation_config_id, expert_id, progress);
+      setHasStartedEvaluating(true);
+      const progress: ExpertEvaluationProgress = {
+        current_submission_index: currentSubmissionIndex,
+        current_exercise_index: currentExerciseIndex,
+        selected_values: selectedValues,
+        has_started_evaluating: true,
+        is_finished_evaluating: isFinishedEvaluating,
+      };
+      saveExpertEvaluationProgress(dataMode, expert_evaluation_config_id, expert_id, progress);
     }
-}
+  }
 
   const handleLikertValueChange = (feedbackType: string, metricId: string, value: number) => {
     const exerciseId = currentExercise.id.toString();
@@ -234,7 +233,7 @@ const saveProgress = () => {
   }
 
   if (!hasStartedEvaluating) {
-    return <WelcomeScreen exercise={currentExercise} onClose={handleWelcomeClose}/>;
+    return <WelcomeScreen exercise={currentExercise} onClose={handleWelcomeClose} />;
   }
 
   if (isContinueLater) {
@@ -253,7 +252,7 @@ const saveProgress = () => {
   }
 
   if (isFinishedEvaluating) {
-    return <CongratulationScreen/>;
+    return <CongratulationScreen />;
   }
 
   if (currentExercise && currentSubmission && currentSubmission.feedbacks) {
@@ -281,5 +280,3 @@ const saveProgress = () => {
     return <div>Loading...</div>;
   }
 }
-
-export default SideBySideExpertView;

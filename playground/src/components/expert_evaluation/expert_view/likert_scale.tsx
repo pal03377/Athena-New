@@ -1,8 +1,8 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import Popup from "@/components/expert_evaluation/expert_view/popup";
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
-import {InfoIconButton} from "@/components/expert_evaluation/expert_evaluation_buttons";
+import { InfoIconButton } from "@/components/expert_evaluation/expert_evaluation_buttons";
 
 interface SingleChoiceLikertScaleProps {
     title: string;
@@ -13,14 +13,15 @@ interface SingleChoiceLikertScaleProps {
     isHighlighted: boolean;
 }
 
-const SingleChoiceLikertScale: React.FC<SingleChoiceLikertScaleProps> = ({
-                                                                             title,
-                                                                             summary,
-                                                                             description,
-                                                                             passedValue,
-                                                                             onLikertChange,
-                                                                             isHighlighted,
-                                                                         }) => {
+export default function SingleChoiceLikertScale(singleChoiceLikertScale: SingleChoiceLikertScaleProps) {
+    const {
+        title,
+        summary,
+        description,
+        passedValue,
+        onLikertChange,
+        isHighlighted,
+    } = singleChoiceLikertScale;
     const [selectedValue, setSelectedValue] = useState<number | null>(null);
     const [isPopupOpen, setIsPopupOpen] = useState(false);
 
@@ -41,7 +42,6 @@ const SingleChoiceLikertScale: React.FC<SingleChoiceLikertScaleProps> = ({
         setIsPopupOpen(false);
     };
 
-    // Define color classes for the bottom border (red to green, grey for "not applicable")
     const borderColors = [
         'border-gray-500',   // Not Applicable
         'border-red-600',    // Strongly Disagree
@@ -51,17 +51,15 @@ const SingleChoiceLikertScale: React.FC<SingleChoiceLikertScaleProps> = ({
         'border-green-700',  // Strongly Agree
     ];
 
-    // Define much brighter background colors for the selected state
     const selectedBgColors = [
-        'bg-gray-200',   // Brighter Not Applicable
-        'bg-red-200',    // Brighter Strongly Disagree
-        'bg-orange-200', // Brighter Disagree
-        'bg-yellow-200', // Brighter Neutral
-        'bg-green-200',  // Brighter Agree
-        'bg-green-300',  // Brighter Strongly Agree
+        'bg-gray-200',
+        'bg-red-200',
+        'bg-orange-200',
+        'bg-yellow-200',
+        'bg-green-200',
+        'bg-green-300',
     ];
 
-    // Define labels corresponding to each value
     const scaleLabels = [
         'Not Ratable',
         'Strongly Disagree',
@@ -76,7 +74,7 @@ const SingleChoiceLikertScale: React.FC<SingleChoiceLikertScaleProps> = ({
             {/* Title and Info Section */}
             <div className="flex items-center">
                 <h3 className="text-sm font-semibold mr-1">{title}</h3>
-                <InfoIconButton onClick={handleInfoClick}/>
+                <InfoIconButton onClick={handleInfoClick} />
             </div>
             <Popup isOpen={isPopupOpen} onClose={closePopup} title="Information">
                 <ReactMarkdown rehypePlugins={[rehypeRaw]} className="prose prose-sm max-w-none">
@@ -108,5 +106,3 @@ const SingleChoiceLikertScale: React.FC<SingleChoiceLikertScaleProps> = ({
         </>
     );
 };
-
-export default SingleChoiceLikertScale;

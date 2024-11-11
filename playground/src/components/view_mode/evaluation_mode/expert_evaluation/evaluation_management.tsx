@@ -66,24 +66,24 @@ export default function EvaluationManagement() {
     return newConfig;
   };
 
-const saveExpertEvaluationConfig = (configToSave = selectedConfig) => {
-  const isNewConfig = configToSave.id === "new";
-  const newConfig = isNewConfig? { ...configToSave, id: uuidv4() } : configToSave;
-  setExpertEvaluationConfigs((prevConfigs) => {
-    const existingIndex = prevConfigs.findIndex((config) => config.id === newConfig.id);
-    if (existingIndex !== -1) {
-      const updatedConfigs = [...prevConfigs];
-      updatedConfigs[existingIndex] = newConfig;
-      return updatedConfigs;
-    } else {
-      return [...prevConfigs, newConfig];
-    }
-  });
+  const saveExpertEvaluationConfig = (configToSave = selectedConfig) => {
+    const isNewConfig = configToSave.id === "new";
+    const newConfig = isNewConfig ? { ...configToSave, id: uuidv4() } : configToSave;
+    setExpertEvaluationConfigs((prevConfigs) => {
+      const existingIndex = prevConfigs.findIndex((config) => config.id === newConfig.id);
+      if (existingIndex !== -1) {
+        const updatedConfigs = [...prevConfigs];
+        updatedConfigs[existingIndex] = newConfig;
+        return updatedConfigs;
+      } else {
+        return [...prevConfigs, newConfig];
+      }
+    });
 
-  setSelectedConfig(newConfig);
-  externalSaveExpertEvaluationConfig(dataMode, newConfig, isNewConfig);
-  setHasUnsavedChanges(false);
-};
+    setSelectedConfig(newConfig);
+    externalSaveExpertEvaluationConfig(dataMode, newConfig, isNewConfig);
+    setHasUnsavedChanges(false);
+  };
 
   const handleExport = () => {
     downloadJSONFile(`evaluation_config_${selectedConfig.name}_${selectedConfig.id}`, selectedConfig);
@@ -114,8 +114,8 @@ const saveExpertEvaluationConfig = (configToSave = selectedConfig) => {
       window.URL.revokeObjectURL(url);
     },
     onError: (error) => {
-        console.error("Download failed:", error.message);
-        alert("An error occurred during download. Please try again later.");
+      console.error("Download failed:", error.message);
+      alert("An error occurred during download. Please try again later.");
     },
   });
 
