@@ -1,16 +1,16 @@
-import type {Exercise} from "@/model/exercise";
-import type {Submission} from "@/model/submission";
-import type {CategorizedFeedback, Feedback} from "@/model/feedback";
-import type {DataMode} from "@/model/data_mode";
+import type { Exercise } from "@/model/exercise";
+import type { Submission } from "@/model/submission";
+import type { CategorizedFeedback, Feedback } from "@/model/feedback";
+import type { DataMode } from "@/model/data_mode";
 
 import path from "path";
 import fs from "fs";
 
 import baseUrl from "@/helpers/base_url";
-import {ExpertEvaluationProgress} from "@/model/expert_evaluation_progress";
-import {ExpertEvaluationConfig} from "@/model/expert_evaluation_config";
-import {v4 as uuidv4} from "uuid";
-import {ExpertEvaluationProgressStats} from "@/model/expert_evaluation_progress_stats";
+import { ExpertEvaluationProgress } from "@/model/expert_evaluation_progress";
+import { ExpertEvaluationConfig } from "@/model/expert_evaluation_config";
+import { v4 as uuidv4 } from "uuid";
+import { ExpertEvaluationProgressStats } from "@/model/expert_evaluation_progress_stats";
 
 /**
  * Splits the given data mode into its parts.
@@ -218,7 +218,7 @@ function jsonToExercise(json: any): Exercise {
 export function addStructuredGradingInstructionsToFeedback(
   config: ExpertEvaluationConfig | undefined,
 ) {
-  if(config) {
+  if (config) {
     config.exercises.forEach((exercise) => {
       const submissions = exercise.submissions;
       if (submissions) {
@@ -233,11 +233,11 @@ export function addStructuredGradingInstructionsToFeedback(
               processedFeedbacks[category] = feedback[category].map((feedbackItem) => {
                 if (feedbackItem.structured_grading_instruction_id) {
                   feedbackItem.structured_grading_instruction = exercise?.grading_criteria
-                      ?.flatMap((criteria) => criteria.structured_grading_instructions)
-                      .find(
-                          (instruction) =>
-                              instruction.id === feedbackItem.structured_grading_instruction_id
-                      );
+                    ?.flatMap((criteria) => criteria.structured_grading_instructions)
+                    .find(
+                      (instruction) =>
+                        instruction.id === feedbackItem.structured_grading_instruction_id
+                    );
                 }
                 return feedbackItem;
               });
@@ -381,34 +381,35 @@ export function saveConfigToFileSync(
     current_exercise_index: 0,
     selected_values: {},
     has_started_evaluating: false,
+    is_finished_evaluating: false,
   };
   const expertProgressData = JSON.stringify(progress, null, 2);
 
   let dirPath = path.join(
-      process.cwd(),
-      "data",
-      ...getDataModeParts(dataMode),
-      `evaluation_${expertEvaluation.id}`);
+    process.cwd(),
+    "data",
+    ...getDataModeParts(dataMode),
+    `evaluation_${expertEvaluation.id}`);
 
   // Create parent directory
   if (!fs.existsSync(dirPath)) {
-    fs.mkdirSync(dirPath, {recursive: true});
+    fs.mkdirSync(dirPath, { recursive: true });
   }
 
   if (expertEvaluation.expertIds) {
     for (const expertId of expertEvaluation.expertIds) {
       // Create progress json for each expert
       let expertProgressPath = path.join(
-          dirPath,
-          `evaluation_progress_${expertId}.json`
+        dirPath,
+        `evaluation_progress_${expertId}.json`
       );
 
       // Only create a new empty progress file if it does not yet exist
       if (!fs.existsSync(expertProgressPath)) {
         fs.writeFileSync(expertProgressPath, expertProgressData, 'utf8');
       }
+    }
   }
-}
 
   // Create or update config file with exercises and data
   return fs.writeFileSync(configPath, configData, 'utf8');
@@ -496,7 +497,7 @@ export function getAnonymizedConfigFromFileSync(
 ): ExpertEvaluationConfig | undefined {
   let config = getConfigFromFileSync(dataMode, expertEvaluationId);
 
-  if(config) {
+  if (config) {
     delete config["expertIds"];
     delete config["mappings"];
   }
