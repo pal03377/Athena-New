@@ -427,21 +427,18 @@ export function getProgressStatsFromFileSync(
     return undefined;
   }
 
+  const totalSubmissions = config.exercises.reduce((acc, exercise) => acc + (exercise.submissions?.length || 0), 0);
+
   let progressStats: { [expertId: string]: number } = {};
   for (const expertId of expertIds) {
     let progress = getProgressFromFileSync(dataMode, expertEvaluationId, expertId);
-    if (progress) {
-      let expertProgress = 0;
-      for (let i = 0; i < progress.current_exercise_index; i++) {
-        expertProgress += config.exercises[i]?.submissions?.length || 0;
-      }
-      expertProgress += progress.current_submission_index;
 
-      progressStats[expertId] = expertProgress;
+    if (progress && progress.is_finished_evaluating) {
+      progressStats[expertId] = totalSubmissions;
+    } else if (progress && progress.has_started_evaluating) {
+      progressStats[expertId] = config.exercises.slice(0, progress.current_exercise_index).reduce((sum, exercise) => sum + exercise.submissions!.length, 0) + progress.current_submission_index;
     }
   }
-
-  const totalSubmissions = config.exercises.reduce((acc, exercise) => acc + (exercise.submissions?.length || 0), 0);
 
   return {
     totalSubmissions: totalSubmissions,

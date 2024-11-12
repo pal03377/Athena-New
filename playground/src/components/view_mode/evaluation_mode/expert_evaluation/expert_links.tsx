@@ -118,7 +118,7 @@ export default function ExpertLinks(props: ExpertLinksProps) {
                       <div className="bg-blue-500 h-2 rounded" style={{ width: `${progressPercentage}%` }} />
                     </div>
                     <span className="text-sm text-gray-700">
-                      {completed === 0 ? 'Not started' : `${completed} / ${total} completed`}
+                      {completed === 0 ? 'Not started' : completed === total ? 'Finished 🏁' : `${completed} / ${total} completed`}
                     </span>
                   </>
                 )}

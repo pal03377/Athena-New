@@ -141,10 +141,8 @@ export default function SideBySideExpertView() {
   };
 
   useEffect(() => {
-    if (currentSubmissionIndex > 0) {
-      saveProgress();
-    }
-  }, [currentSubmissionIndex, isFinishedEvaluating]);
+    saveProgress();
+  }, [currentSubmissionIndex, currentExerciseIndex, isFinishedEvaluating]);
 
   const handlePrevious = () => {
     // If we are not at the first submission, just decrement the submission index
