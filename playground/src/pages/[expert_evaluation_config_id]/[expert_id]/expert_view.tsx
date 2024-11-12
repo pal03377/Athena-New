@@ -117,7 +117,7 @@ export default function SideBySideExpertView() {
       confirmed = confirm("Are you sure want to continue with the next submission? You did not yet evaluate all metrics!");
     }
 
-    if (globalSubmissionIndex === submissionsLength - 1) {
+    if (globalSubmissionIndex === submissionsLength - 1 && confirmed) {
       confirmed = confirm("Are you sure you want to finish the evaluation? Once you finish, you can no longer make any changes!");
     }
 
@@ -144,7 +144,7 @@ export default function SideBySideExpertView() {
     if (currentSubmissionIndex > 0) {
       saveProgress();
     }
-  }, [currentSubmissionIndex]);
+  }, [currentSubmissionIndex, isFinishedEvaluating]);
 
   const handlePrevious = () => {
     // If we are not at the first submission, just decrement the submission index
