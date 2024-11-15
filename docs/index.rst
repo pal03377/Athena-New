@@ -24,6 +24,13 @@ Athena will use the information it is given and provide the automatic suggestion
     overview/playground
 
 .. toctree::
+    :caption: User Guide
+    :includehidden:
+    :maxdepth: 2
+
+    user_guide/index
+
+.. toctree::
     :caption: Setup
     :includehidden:
     :maxdepth: 1
@@ -59,3 +66,10 @@ Athena will use the information it is given and provide the automatic suggestion
 
     athena_package/storage
     athena_package/helpers
+
+.. toctree::
+    :caption: Administration of Deployments
+    :includehidden:
+    :maxdepth: 1
+
+    administration_of_deployments/configuration

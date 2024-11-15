@@ -38,7 +38,8 @@ class HealthResponse(BaseModel):
                     "type": "programming",
                     "healthy": True,
                     "supportsEvaluation": True,
-                    "supportsNonGradedFeedbackRequests": True
+                    "supportsNonGradedFeedbackRequests": True,
+                    "supportsGradedFeedbackRequests": True
                 }
             }
         ]
@@ -60,7 +61,8 @@ async def get_health() -> HealthResponse:
                 "type": module.type,
                 "healthy": await is_healthy(module),
                 "supportsEvaluation": module.supports_evaluation,
-                "supportsNonGradedFeedbackRequests": module.supports_non_graded_feedback_requests
+                "supportsNonGradedFeedbackRequests": module.supports_non_graded_feedback_requests,
+                "supportsGradedFeedbackRequests": module.supports_graded_feedback_requests
             }
             for module in get_modules()
         }

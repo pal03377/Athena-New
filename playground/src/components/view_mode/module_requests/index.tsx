@@ -41,7 +41,7 @@ export default function ModuleRequests() {
                     <SendSubmissions/>
                     <SelectSubmission/>
                     <SendFeedbacks/>
-                    <RequestGradedFeedbackSuggestions/>
+                    {moduleAndConfig.module.supportsGradedFeedbackRequests && <RequestGradedFeedbackSuggestions/>}
                     {moduleAndConfig.module.supportsNonGradedFeedbackRequests && <RequestNonGradedFeedbackSuggestions/>}
                     <RequestEvaluation/>
                 </ModuleProvider>
