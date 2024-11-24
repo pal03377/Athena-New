@@ -1,7 +1,7 @@
 from typing import Type, TypeVar, List
 from pydantic import BaseModel
 import tiktoken
-from langchain.chat_models import ChatOpenAI
+from langchain_openai import ChatOpenAI
 from langchain.base_language import BaseLanguageModel
 from langchain.prompts import (
     ChatPromptTemplate,
@@ -26,9 +26,9 @@ def num_tokens_from_prompt(chat_prompt: ChatPromptTemplate, prompt_input: dict) 
     return num_tokens_from_string(chat_prompt.format(**prompt_input))
 
 
-def check_prompt_length_and_omit_features_if_necessary(prompt: ChatPromptTemplate, 
-                                                       prompt_input: dict, 
-                                                       max_input_tokens: int, 
+def check_prompt_length_and_omit_features_if_necessary(prompt: ChatPromptTemplate,
+                                                       prompt_input: dict,
+                                                       max_input_tokens: int,
                                                        omittable_features: List[str],
                                                        debug: bool):
     """Check if the input is too long and omit features if necessary.
@@ -43,7 +43,7 @@ def check_prompt_length_and_omit_features_if_necessary(prompt: ChatPromptTemplat
         debug (bool): Debug flag
 
     Returns:
-        (dict, bool): Tuple of (prompt_input, should_run) where prompt_input is the input with omitted features and 
+        (dict, bool): Tuple of (prompt_input, should_run) where prompt_input is the input with omitted features and
                       should_run is True if the model should run, False otherwise
     """
     if num_tokens_from_prompt(prompt, prompt_input) <= max_input_tokens:
@@ -79,11 +79,11 @@ def supports_function_calling(model: BaseLanguageModel):
 
 
 def get_chat_prompt_with_formatting_instructions(
-            model: BaseLanguageModel,
-            system_message: str, 
-            human_message: str,
-            pydantic_object: Type[T]
-        ) -> ChatPromptTemplate:
+        model: BaseLanguageModel,
+        system_message: str,
+        human_message: str,
+        pydantic_object: Type[T]
+) -> ChatPromptTemplate:
     """Returns a ChatPromptTemplate with formatting instructions (if necessary)
 
     Note: Does nothing if the model supports function calling
@@ -101,10 +101,11 @@ def get_chat_prompt_with_formatting_instructions(
         system_message_prompt = SystemMessagePromptTemplate.from_template(system_message)
         human_message_prompt = HumanMessagePromptTemplate.from_template(human_message)
         return ChatPromptTemplate.from_messages([system_message_prompt, human_message_prompt])
-    
+
     output_parser = PydanticOutputParser(pydantic_object=pydantic_object)
     system_message_prompt = SystemMessagePromptTemplate.from_template(system_message + "\n{format_instructions}")
     system_message_prompt.prompt.partial_variables = {"format_instructions": output_parser.get_format_instructions()}
     system_message_prompt.prompt.input_variables.remove("format_instructions")
-    human_message_prompt = HumanMessagePromptTemplate.from_template(human_message + "\n\nJSON response following the provided schema:")
+    human_message_prompt = HumanMessagePromptTemplate.from_template(
+        human_message + "\n\nJSON response following the provided schema:")
     return ChatPromptTemplate.from_messages([system_message_prompt, human_message_prompt])

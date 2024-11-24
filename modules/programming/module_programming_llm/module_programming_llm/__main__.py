@@ -1,6 +1,8 @@
+import os
 from typing import List
 
 import tiktoken
+from langchain_core.globals import set_debug, set_verbose
 
 from athena import (
     app,
@@ -11,14 +13,8 @@ from athena import (
 )
 from athena.programming import Exercise, Submission, Feedback
 from athena.logger import logger
+from module_programming_llm.approaches import generate_feedback
 from module_programming_llm.config import Configuration
-
-from module_programming_llm.generate_graded_suggestions_by_file import (
-    generate_suggestions_by_file as generate_graded_suggestions_by_file,
-)
-from module_programming_llm.generate_non_graded_suggestions_by_file import (
-    generate_suggestions_by_file as generate_non_graded_suggestions_by_file,
-)
 
 
 @submissions_consumer
@@ -41,11 +37,7 @@ def process_incoming_feedback(exercise: Exercise, submission: Submission, feedba
 async def suggest_feedback(exercise: Exercise, submission: Submission, is_graded: bool, module_config: Configuration) -> List[Feedback]:
     logger.info("suggest_feedback: %s suggestions for submission %d of exercise %d were requested",
                 "Graded" if is_graded else "Non-graded", submission.id, exercise.id)
-    if is_graded:
-        return await generate_graded_suggestions_by_file(exercise, submission, module_config.graded_approach,
-                                                         module_config.debug)
-    return await generate_non_graded_suggestions_by_file(exercise, submission, module_config.non_graded_approach,
-                                                             module_config.debug)
+    return await generate_feedback(exercise, submission, is_graded, module_config)
 
 
 
@@ -53,3 +45,8 @@ if __name__ == "__main__":
     # Preload for token estimation later
     tiktoken.get_encoding("cl100k_base")
     app.start()
+
+    enable_debug = os.getenv("ENABLE_DEBUGGING_INFO", "False").lower() in ("true", "1")
+    if enable_debug:
+        set_debug(True)
+        set_verbose(True)

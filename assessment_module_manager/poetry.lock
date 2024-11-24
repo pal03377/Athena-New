@@ -38,7 +38,7 @@ description = "This is a helper module for easier development of Athena modules.
 optional = false
 python-versions = "3.11.*"
 files = []
-develop = true
+develop = false
 
 [package.dependencies]
 fastapi = "^0.109.1"
@@ -49,8 +49,11 @@ sqlalchemy = {version = "^2.0.21", extras = ["mypy"]}
 uvicorn = "^0.23.0"
 
 [package.source]
-type = "directory"
-url = "../athena"
+type = "git"
+url = "https://github.com/ls1intum/Athena.git"
+reference = "9773c41"
+resolved_reference = "9773c41f64f0ae307b879363308b2b63082b6bf7"
+subdirectory = "athena"
 
 [[package]]
 name = "certifi"
@@ -1044,4 +1047,4 @@ standard = ["colorama (>=0.4)", "httptools (>=0.5.0)", "python-dotenv (>=0.13)",
 [metadata]
 lock-version = "2.0"
 python-versions = "3.11.*"
-content-hash = "02781dc7d21c2e264149e6e6f6ecbc7a0d7642784bc67420cefceb3fd45979de"
+content-hash = "f740d850d558b42bdfa0e31eb3c74690065c5ef82d3636ddd577e3b785c30b1d"
