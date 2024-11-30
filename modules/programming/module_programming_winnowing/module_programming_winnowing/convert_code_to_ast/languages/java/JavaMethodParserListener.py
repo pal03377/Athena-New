@@ -2,7 +2,7 @@
 from dataclasses import dataclass
 from antlr4 import *
 
-from module_programming_apted.convert_code_to_ast.languages.java.JavaParser import JavaParser
+from module_programming_winnowing.convert_code_to_ast.languages.java import JavaParser
 
 
 @dataclass

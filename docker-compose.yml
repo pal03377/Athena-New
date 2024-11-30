@@ -85,7 +85,7 @@ services:
 
   module_programming_winnowing:
     hostname: module-programming-winnowing
-    build: ./module_programming_winnowing
+    build: modules/programming/module_programming_winnowing
     depends_on:
       - athena
     ports:

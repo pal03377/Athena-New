@@ -13,7 +13,7 @@ athena = { git = "https://github.com/ls1intum/Athena.git", rev = "ccd00cf8346e76
 apted = "^1.0.3"
 antlr4-python3-runtime = "^4.13.1"
 javalang = {git = "https://github.com/c2nes/javalang"}
-pydantic = "1.10.13"
+#pydantic = "1.10.13"
 
 [tool.poetry.group.dev.dependencies]
 types-requests = "^2.31.0.8"
