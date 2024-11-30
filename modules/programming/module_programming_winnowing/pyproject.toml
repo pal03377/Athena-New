@@ -7,8 +7,7 @@ license = "MIT"
 
 [tool.poetry.dependencies]
 python = "3.11.*"
-athena = {path = "../athena", develop = true}
-module_programming_apted = {path = "../module_programming_apted", develop = true}
+athena = { git = "https://github.com/ls1intum/Athena.git", rev = "ccd00cf8346e76738a66e7f4cf04c84aa4cb4378", subdirectory = "athena"}
 nltk = "^3.6.5"
 antlr4-python3-runtime = "^4.13.1"
 pydantic = "1.10.13"
