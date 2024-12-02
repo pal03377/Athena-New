@@ -10,6 +10,6 @@ from module_text_llm.chain_of_thought_approach.generate_suggestions import gener
 async def generate_suggestions(exercise: Exercise, submission: Submission, config: ApproachConfig, debug: bool) -> List[Feedback]:
     if isinstance(config, BasicApproachConfig):
         return await generate_suggestions_basic(exercise, submission, config, debug)
-    if isinstance(config, ChainOfThoughtConfig):  # Remove "elif"
+    if isinstance(config, ChainOfThoughtConfig):
         return await generate_cot_suggestions(exercise, submission, config, debug)
     raise ValueError("Unsupported config type provided.")
