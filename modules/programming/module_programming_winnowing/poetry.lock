@@ -62,8 +62,8 @@ uvicorn = "^0.23.0"
 [package.source]
 type = "git"
 url = "https://github.com/ls1intum/Athena.git"
-reference = "ccd00cf8346e76738a66e7f4cf04c84aa4cb4378"
-resolved_reference = "ccd00cf8346e76738a66e7f4cf04c84aa4cb4378"
+reference = "bbb2bb0"
+resolved_reference = "bbb2bb02480496362647205ab517f202673e9bb2"
 subdirectory = "athena"
 
 [[package]]
@@ -1194,4 +1194,4 @@ standard = ["colorama (>=0.4)", "httptools (>=0.5.0)", "python-dotenv (>=0.13)",
 [metadata]
 lock-version = "2.0"
 python-versions = "3.11.*"
-content-hash = "b80e6827e531b9b3c07a6af536842095fc6e2ca7f2131b341a1cfdc3f92b48d6"
+content-hash = "b5943cc8ae2e2fe7b1d84126fe323532445afea6680a775ca5415f63b5bd2256"
