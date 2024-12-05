@@ -48,7 +48,7 @@ class ImprovementModel(BaseModel):
     feedbacks: Sequence[FeedbackModel] = Field(description="Improvement feedbacks")
 
     class Config:
-        title = "Improvement"
+        title = "ImprovementModel"
 
 
 # pylint: disable=too-many-locals
