@@ -219,6 +219,7 @@ async def generate_suggestions_by_file(
                 chat_prompt=chat_prompt,
                 prompt_input=prompt_input,
                 pydantic_object=ImprovementModel,
+                use_function_calling=True,
                 tags=[
                     f"exercise-{exercise.id}",
                     f"submission-{submission.id}",
