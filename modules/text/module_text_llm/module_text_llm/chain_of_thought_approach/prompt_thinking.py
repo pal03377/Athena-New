@@ -54,7 +54,7 @@ class InitialAssessment(BaseModel):
     grading_instruction_id: Optional[int] = Field(
         description="ID of the grading instruction that was used to generate this feedback, or empty if no grading instruction was used"
     )
-    impprovment_suggestion: str = Field(description="Suggestion for improvement for the student")
+    improvment_suggestion: str = Field(description="Suggestion for improvement for the student")
 
 class InitialAssessmentModel(BaseModel):
     """Collection of feedbacks making up an assessment"""
