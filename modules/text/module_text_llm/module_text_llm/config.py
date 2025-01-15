@@ -4,13 +4,14 @@ from athena import config_schema_provider
 
 from module_text_llm.chain_of_thought_approach import ChainOfThoughtConfig
 from module_text_llm.basic_approach import BasicApproachConfig
+from module_text_llm.in_context_learning import InContextLearningConfig
 
-ApproachConfigUnion = Union[BasicApproachConfig, ChainOfThoughtConfig]
+ApproachConfigUnion = Union[InContextLearningConfig ,BasicApproachConfig, ChainOfThoughtConfig]
 
 @config_schema_provider
 class Configuration(BaseModel):
     debug: bool = Field(default=False, description="Enable debug mode.")
-    approach: ApproachConfigUnion = Field(default_factory=BasicApproachConfig)  # Default to BasicApproach
+    approach: ApproachConfigUnion = Field(default_factory=InContextLearningConfig)  # Default to BasicApproach
 
     class Config:
         smart_union = True 

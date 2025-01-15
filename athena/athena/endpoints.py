@@ -3,7 +3,6 @@ import inspect
 from fastapi import Depends, BackgroundTasks, Body
 from pydantic import BaseModel, ValidationError
 from typing import TypeVar, Callable, List, Union, Any, Coroutine, Type
-
 from athena.app import app
 from athena.authenticate import authenticated
 from athena.metadata import with_meta
@@ -201,7 +200,7 @@ def feedback_consumer(func: Union[
     Callable[[E, S, List[F]], None],
     Callable[[E, S, List[F]], Coroutine[Any, Any, None]],
     Callable[[E, S, List[F], C], None],
-    Callable[[E, S, List[F], C], Coroutine[Any, Any, None]]
+    Callable[[E, S, List[F], C], Coroutine[Any, Any, None]],
 ]):
     """
     Receive feedback from the Assessment Module Manager.
@@ -234,7 +233,6 @@ def feedback_consumer(func: Union[
     submission_type = inspect.signature(func).parameters["submission"].annotation
     feedback_type = inspect.signature(func).parameters["feedbacks"].annotation.__args__[0]
     module_config_type = inspect.signature(func).parameters["module_config"].annotation if "module_config" in inspect.signature(func).parameters else None
-
     @app.post("/feedbacks", responses=module_responses)
     @authenticated
     @with_meta
@@ -265,6 +263,52 @@ def feedback_consumer(func: Union[
         return None
     return wrapper
 
+
+def feedback_feeder(func: Union[
+    Callable[[E, S, List[F]], Any],
+    Callable[[E, S, List[F]], Coroutine[Any, Any, Any]],
+    Callable[[E, S, List[F], C], Any],
+    Callable[[E, S, List[F], C], Coroutine[Any, Any, Any]],
+    Callable[[E, S, List[F], G, C], Coroutine[Any, Any, Any]],
+    Callable[[E, S, List[F], G, C],Any],
+    Callable[[E, S, List[F], G], Any],
+    Callable[[E, S, List[F], G], Coroutine[Any, Any, Any]]
+]):
+    exercise_type = inspect.signature(func).parameters["exercise"].annotation
+    submission_type = inspect.signature(func).parameters["submission"].annotation
+    feedback_type = inspect.signature(func).parameters["feedbacks"].annotation.__args__[0]
+    module_config_type = inspect.signature(func).parameters["module_config"].annotation if "module_config" in inspect.signature(func).parameters else None
+    use_for_continuous_learning_type = inspect.signature(func).parameters["use_for_continuous_learning"].annotation if "use_for_continuous_learning" in inspect.signature(func).parameters else None
+    @app.post("/feed_feedbacks", responses=module_responses)
+    @authenticated
+    @with_meta
+    async def wrapper(
+            # background_tasks: BackgroundTasks,
+            exercise: exercise_type,
+            submission: submission_type,
+            feedbacks: List[feedback_type],
+            useForContinuousLearning: use_for_continuous_learning_type = Body(default=False, alias="useForContinuousLearning"),
+            module_config: module_config_type = Depends(get_dynamic_module_config_factory(module_config_type))):
+
+        # Retrieve existing metadata for the exercise, submission and feedback
+        exercise.meta.update(get_stored_exercise_meta(exercise) or {})
+        store_exercise(exercise)
+        submission.meta.update(get_stored_submission_meta(submission) or {})
+        store_submissions([submission])
+        for feedback in feedbacks:
+            feedback.meta.update(get_stored_feedback_meta(feedback) or {})
+            # Change the ID of the LMS to an internal ID
+            feedback.id = store_feedback(feedback, is_lms_id=True).id
+
+        kwargs = {}
+        if "use_for_continuous_learning" in inspect.signature(func).parameters:
+            kwargs["use_for_continuous_learning"] = useForContinuousLearning
+            logger.info("It was in signature feed_feedbacks")
+        if "module_config" in inspect.signature(func).parameters:
+            kwargs["module_config"] = module_config
+        
+        return await func(exercise, submission,feedbacks, **kwargs)
+    return wrapper
 
 def feedback_provider(func: Union[
     Callable[[E, S], List[F]],
