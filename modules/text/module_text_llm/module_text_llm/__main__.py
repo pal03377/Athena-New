@@ -22,7 +22,7 @@ def select_submission(exercise: Exercise, submissions: List[Submission]) -> Subm
     logger.info("select_submission: Received %d, submissions for exercise %d", len(submissions), exercise.id)
     return submissions[0]
 
-
+#testing
 @feedback_consumer
 def process_incoming_feedback(exercise: Exercise, submission: Submission, feedbacks: List[Feedback]):
     logger.info("process_feedback: Received %d feedbacks for submission %d of exercise %d.", len(feedbacks), submission.id, exercise.id)
