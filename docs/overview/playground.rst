@@ -231,7 +231,7 @@ Researcher View
 Researcher View is accessible from the playground below Evaluation Mode:
 
 .. figure:: ../images/playground/expert_evaluation/researcher_view_location.png
-    :width: 750px
+    :width: 850px
     :alt: Location of the Researcher View
 
 The researcher begins creating a new Expert Evaluation by selecting a new name and uploading exercises with submissions and feedback.
@@ -239,7 +239,7 @@ Now the expert can define his own metrics such as actionability, accuracy and ad
 Based on these metrics, experts will compare the different feedback types.
 
 .. figure:: ../images/playground/expert_evaluation/define_metrics.png
-    :width: 750px
+    :width: 850px
     :alt: Defining metrics
 
 Afterwards, the researcher adds a link for each expert participating in the evaluation.
@@ -247,7 +247,7 @@ This link should then be shared with the corresponding expert.
 After finishing the configuration, the researcher can define the experiment and start the Expert Evaluation.
 
 .. figure:: ../images/playground/expert_evaluation/define_experiment.png
-    :width: 750px
+    :width: 850px
     :alt: Define experiment
 
 .. warning::
@@ -260,7 +260,7 @@ After the evaluation has been started and the experts have begun to evaluate, th
 Evaluation results can be exported at any time during the evaluation using the Download Results button.
 
 .. figure:: ../images/playground/expert_evaluation/view_expert_evaluation_progress.png
-    :width: 750px
+    :width: 850px
     :alt: View Expert Evaluation progress
 
 Expert View
@@ -269,7 +269,7 @@ The Expert View can be accessed through generated expert links.
 The Side-by-Side tool is used for evaluation.
 
 .. figure:: ../images/playground/expert_evaluation/side-by-side-tool.png
-    :width: 750px
+    :width: 850px
     :alt: Side-by-Side tool
 
 First time clicking on the link, the expert is greeted by a welcome screen, where the tutorial begins.
@@ -280,7 +280,7 @@ The details include the problem statement, grading instructions, and a sample so
 
 .. raw:: html
 
-    <iframe src="../_static/videos/exercise_details.mp4" allowfullscreen="1" frameborder="0" width="850" height="600">
+    <iframe src="../_static/videos/exercise_details.mp4" allowfullscreen="1" frameborder="0" width="950" height="700">
         Read exercise details
     </iframe>
 
@@ -288,7 +288,7 @@ After understanding the exercise, the expert reads through the submission and th
 
 .. raw:: html
 
-    <iframe src="../_static/videos/read_submission.mp4" allowfullscreen="1" frameborder="0" width="850" height="600">
+    <iframe src="../_static/videos/read_submission.mp4" allowfullscreen="1" frameborder="0" width="950" height="700">
         Read submission
     </iframe>
 
@@ -296,7 +296,7 @@ The expert then evaluates the feedback using a 5-point Likert scale based on the
 
 .. raw:: html
 
-    <iframe src="../_static/videos/evaluation_metrics.mp4" allowfullscreen="1" frameborder="0" width="850" height="600">
+    <iframe src="../_static/videos/evaluation_metrics.mp4" allowfullscreen="1" frameborder="0" width="950" height="700">
         Evaluate metrics
     </iframe>
 
@@ -304,7 +304,7 @@ If the meaning of a metric is unclear, a more detailed explanation can be access
 
 .. raw:: html
 
-    <iframe src="../_static/videos/metrics_explanation.mp4" allowfullscreen="1" frameborder="0" width="850" height="600">
+    <iframe src="../_static/videos/metrics_explanation.mp4" allowfullscreen="1" frameborder="0" width="950" height="700">
         Read metrics explanation
     </iframe>
 
@@ -313,6 +313,6 @@ When ready to take a break, the expert clicks on the Continue Later button which
 
 .. raw:: html
 
-    <iframe src="../_static/videos/continue_later.mp4" allowfullscreen="1" frameborder="0" width="850" height="600">
+    <iframe src="../_static/videos/continue_later.mp4" allowfullscreen="1" frameborder="0" width="950" height="700">
         Continue later
     </iframe>
