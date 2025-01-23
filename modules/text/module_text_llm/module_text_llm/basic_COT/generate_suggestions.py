@@ -1,10 +1,9 @@
 from typing import List
+from module_text_llm.approach_config import ApproachConfig
+
 from athena import emit_meta
 from athena.text import Exercise, Submission, Feedback
 from athena.logger import logger
-
-from module_text_llm.approach_config import ApproachConfig
-
 from llm_core.utils.llm_utils import (
     get_chat_prompt_with_formatting_instructions, 
     check_prompt_length_and_omit_features_if_necessary, 
@@ -12,14 +11,12 @@ from llm_core.utils.llm_utils import (
 )
 from llm_core.utils.predict_and_parse import predict_and_parse
 
+# from module_text_llm.config import BasicApproachConfig
 from module_text_llm.helpers.utils import add_sentence_numbers, get_index_range_from_line_range, format_grading_instructions
-from module_text_llm.chain_of_thought_approach.prompt_thinking import InitialAssessmentModel
-from module_text_llm.chain_of_thought_approach.prompt_generate_feedback import AssessmentModel
+from module_text_llm.basic_COT.prompt_generate_suggestions import AssessmentModel
 
-
-async def generate_suggestions(exercise: Exercise, submission: Submission, config: ApproachConfig, debug: bool, is_graded: bool) -> List[Feedback]:
+async def generate_suggestions(exercise: Exercise, submission: Submission, config:ApproachConfig, debug: bool, is_graded: bool) -> List[Feedback]:
     model = config.model.get_model()  # type: ignore[attr-defined]
-
     prompt_input = {
         "max_points": exercise.max_points,
         "bonus_points": exercise.bonus_points,
@@ -31,11 +28,11 @@ async def generate_suggestions(exercise: Exercise, submission: Submission, confi
 
     chat_prompt = get_chat_prompt_with_formatting_instructions(
         model=model, 
-        system_message=config.thinking_prompt.system_message, 
-        human_message=config.thinking_prompt.human_message, 
-        pydantic_object=InitialAssessmentModel
+        system_message=config.generate_suggestions_prompt.system_message, 
+        human_message=config.generate_suggestions_prompt.human_message, 
+        pydantic_object=AssessmentModel
     )
-    
+
     # Check if the prompt is too long and omit features if necessary (in order of importance)
     omittable_features = ["example_solution", "problem_statement", "grading_instructions"]
     prompt_input, should_run = check_prompt_length_and_omit_features_if_necessary(
@@ -54,11 +51,11 @@ async def generate_suggestions(exercise: Exercise, submission: Submission, confi
             emit_meta("error", f"Input too long {num_tokens_from_prompt(chat_prompt, prompt_input)} > {config.max_input_tokens}")
         return []
 
-    initial_result = await predict_and_parse(
+    result = await predict_and_parse(
         model=model, 
         chat_prompt=chat_prompt, 
         prompt_input=prompt_input, 
-        pydantic_object=InitialAssessmentModel,
+        pydantic_object=AssessmentModel,
         tags=[
             f"exercise-{exercise.id}",
             f"submission-{submission.id}",
@@ -66,38 +63,11 @@ async def generate_suggestions(exercise: Exercise, submission: Submission, confi
         use_function_calling=True
     )
 
-    second_prompt_input = {
-        "problem_statement": exercise.problem_statement or "No problem statement.",
-        "grading_instructions": format_grading_instructions(exercise.grading_instructions, exercise.grading_criteria),
-        "answer" : initial_result.dict(),
-        "submission": add_sentence_numbers(submission.text)
-
-    }
-    
-    second_chat_prompt = get_chat_prompt_with_formatting_instructions(     
-        model=model, 
-        system_message=config.generate_suggestions_prompt.second_system_message, 
-        human_message=config.generate_suggestions_prompt.answer_message, 
-        pydantic_object=AssessmentModel)
-    
-    result = await predict_and_parse(
-    model=model, 
-    chat_prompt=second_chat_prompt, 
-    prompt_input=second_prompt_input, 
-    pydantic_object=AssessmentModel,
-    tags=[
-        f"exercise-{exercise.id}",
-        f"submission-{submission.id}",
-    ],
-        use_function_calling=True
-    )
-        
     if debug:
         emit_meta("generate_suggestions", {
             "prompt": chat_prompt.format(**prompt_input),
             "result": result.dict() if result is not None else None
         })
-
 
     if result is None:
         return []
