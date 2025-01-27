@@ -23,48 +23,61 @@ async def generate_suggestions(exercise: Exercise, submission: Submission, confi
         for grading_instruction in criterion.structured_grading_instructions
     )
     tasks = []
+
     for idx, criteria in enumerate(grading_criteria):
-        if(criteria.title == "Plagiarism" or criteria.title == "plagiarism"): # Exclude plagarism because the model cannot know and it hallucinates
+        processing_inputs = {
+            "model": model,
+            "prompt_input": prompt_input,
+            "exercise": exercise,
+            "submission": submission,
+            "grading_instruction_ids": grading_instruction_ids,
+            "is_graded": is_graded,
+            "criteria_title": criteria.title
+        }
+        if("plagiarism" in criteria.title.lower()): # Exclude plagarism because the model cannot know and it hallucinates
             continue
         usage_count, system_prompt = get_system_prompt(idx,exercise, criteria)
         if(usage_count == 1):
             chat_prompt = get_chat_prompt_with_formatting_instructions(model = model, system_message = system_prompt,human_message = get_human_message(),pydantic_object = FeedbackModel)
-            tasks.append(process_criteria(FeedbackModel, model, chat_prompt, prompt_input, exercise, submission, grading_instruction_ids, is_graded,criteria.title))    
+            processing_inputs["pydantic_object"] = FeedbackModel
+            processing_inputs["chat_prompt"] = chat_prompt
         else:
             chat_prompt = get_chat_prompt_with_formatting_instructions(model = model, system_message = system_prompt,human_message= get_human_message(),pydantic_object = AssessmentModel)
-            tasks.append(process_criteria(AssessmentModel, model, chat_prompt, prompt_input, exercise, submission, grading_instruction_ids, is_graded,criteria.title))
+            processing_inputs["pydantic_object"] = AssessmentModel
+            processing_inputs["chat_prompt"] = chat_prompt
+        tasks.append(process_criteria(processing_inputs))    
 
     results = await asyncio.gather(*tasks)
 
     # Flatten the list of feedbacks
     for feedback_list in results:
         feedbacks += feedback_list
-    print(feedbacks)
     return feedbacks
 
-async def process_criteria(pydantic_object, model, chat_prompt, prompt_input, exercise, submission, grading_instruction_ids, is_graded,criteria_title):
+async def process_criteria(processing_inputs):
+
     # Call the predict_and_parse method
     result = await predict_and_parse(
-        model=model, 
-        chat_prompt=chat_prompt, 
-        prompt_input=prompt_input, 
-        pydantic_object=pydantic_object,
+        model=processing_inputs["model"], 
+        chat_prompt=processing_inputs["chat_prompt"], 
+        prompt_input=processing_inputs["prompt_input"], 
+        pydantic_object=processing_inputs["pydantic_object"],
         tags=[
-            f"exercise-{exercise.id}",
-            f"submission-{submission.id}",
+            f"exercise-{processing_inputs['exercise'].id}",
+            f"submission-{processing_inputs['submission'].id}",
         ],
         use_function_calling=True
     )
 
-    if pydantic_object is AssessmentModel:
+    if processing_inputs["pydantic_object"] is AssessmentModel:
         try:
-            return parse_assessment_result(result, exercise, submission, grading_instruction_ids, is_graded,criteria_title)
+            return parse_assessment_result(result, processing_inputs['exercise'], processing_inputs['submission'], processing_inputs["grading_instruction_ids"], processing_inputs["is_graded"],processing_inputs["criteria_title"])
         except Exception as e:
             logger.info("Failed to parse assessment result")
             return []
     else:
         try:
-            return parse_feedback_result(result, exercise, submission, grading_instruction_ids, is_graded,criteria_title)
+            return parse_feedback_result(result, processing_inputs['exercise'], processing_inputs['submission'], processing_inputs["grading_instruction_ids"], processing_inputs["is_graded"],processing_inputs["criteria_title"])
         except Exception as e:
             logger.info("Failed to parse feedback result")
             return []

@@ -1,5 +1,4 @@
 from module_text_llm.approach_config import ApproachConfig
-from pydantic import Field
 from typing import Literal
 from athena.text import Exercise, Submission
 from module_text_llm.divide_and_conquer.generate_suggestions import generate_suggestions

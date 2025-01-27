@@ -17,7 +17,7 @@ def double_curly_braces(input_str):
 
 # Prompts are generated at run time.
 def get_system_prompt(index,exericse,cirteria:GradingCriterion):
-    system_prompt = f"""You are an AI Assistant TUTOR at a prestigious university tasked with assessing text submissions. You are tasked with assessing a submission from a student. The problem statement is:"""
+    system_prompt = """You are an AI Assistant TUTOR at a prestigious university tasked with assessing text submissions. You are tasked with assessing a submission from a student. The problem statement is:"""
     usage_count, formatted_criterion = format_divide_and_conquer_criteria(index,exericse,cirteria)
     return usage_count, system_prompt + formatted_criterion
 
