@@ -34,10 +34,10 @@ async def generate_suggestions(exercise: Exercise, submission: Submission, confi
             "is_graded": is_graded,
             "criteria_title": criteria.title
         }
-        if("plagiarism" in criteria.title.lower()): # Exclude plagarism because the model cannot know and it hallucinates
+        if ("plagiarism" in criteria.title.lower()): # Exclude plagarism because the model cannot know and it hallucinates
             continue
         usage_count, system_prompt = get_system_prompt(idx,exercise, criteria)
-        if(usage_count == 1):
+        if (usage_count == 1):
             chat_prompt = get_chat_prompt_with_formatting_instructions(model = model, system_message = system_prompt,human_message = get_human_message(),pydantic_object = FeedbackModel)
             processing_inputs["pydantic_object"] = FeedbackModel
             processing_inputs["chat_prompt"] = chat_prompt
@@ -71,24 +71,24 @@ async def process_criteria(processing_inputs):
 
     if processing_inputs["pydantic_object"] is AssessmentModel:
         try:
-            return parse_assessment_result(result, processing_inputs['exercise'], processing_inputs['submission'], processing_inputs["grading_instruction_ids"], processing_inputs["is_graded"],processing_inputs["criteria_title"])
+            return parse_assessment_result(result, processing_inputs['exercise'], processing_inputs['submission'], processing_inputs["grading_instruction_ids"], processing_inputs["is_graded"])
         except Exception as e:
             logger.info("Failed to parse assessment result")
             return []
     else:
         try:
-            return parse_feedback_result(result, processing_inputs['exercise'], processing_inputs['submission'], processing_inputs["grading_instruction_ids"], processing_inputs["is_graded"],processing_inputs["criteria_title"])
+            return parse_feedback_result(result, processing_inputs['exercise'], processing_inputs['submission'], processing_inputs["grading_instruction_ids"], processing_inputs["is_graded"])
         except Exception as e:
             logger.info("Failed to parse feedback result")
             return []
 
-def parse_assessment_result(result, exercise, submission, grading_instruction_ids, is_graded,criteria_title):
+def parse_assessment_result(result, exercise, submission, grading_instruction_ids, is_graded):
     result_feedbacks = []
     for feedback in result.assessment:
-        result_feedbacks += parse_feedback_result(feedback, exercise, submission, grading_instruction_ids, is_graded,criteria_title)
+        result_feedbacks += parse_feedback_result(feedback, exercise, submission, grading_instruction_ids, is_graded)
     return result_feedbacks
 
-def parse_feedback_result(feedback, exercise, submission, grading_instruction_ids, is_graded,criteria_title):
+def parse_feedback_result(feedback, exercise, submission, grading_instruction_ids, is_graded):
     result_feedbacks = []
 
     index_start, index_end = get_index_range_from_line_range(

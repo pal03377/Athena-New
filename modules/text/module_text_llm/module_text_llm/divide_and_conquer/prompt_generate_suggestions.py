@@ -44,7 +44,7 @@ def format_divide_and_conquer_criteria(index,exercise, criteria: GradingCriterio
     """
     usage_counts = [instruction.usage_count for instruction in criteria.structured_grading_instructions]
     use_same_usaged_count = False
-    if(len(set(usage_counts)) == 1):
+    if (len(set(usage_counts)) == 1):
         use_same_usaged_count = True
     if use_same_usaged_count:
         criteria_explanation_prompt += f""" 
