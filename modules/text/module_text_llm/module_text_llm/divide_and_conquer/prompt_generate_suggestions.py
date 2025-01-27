@@ -90,3 +90,4 @@ class FeedbackModel(BaseModel):
 class AssessmentModel(BaseModel):
     """Collection of feedbacks making up an assessment"""
     assessment: List[FeedbackModel] = Field(description="Assessment feedbacks")
+    

@@ -1,5 +1,3 @@
-from typing import List
-from athena import emit_meta
 from athena.text import Exercise, Submission, Feedback
 from athena.logger import logger
 from llm_core.utils.llm_utils import get_chat_prompt_with_formatting_instructions
@@ -101,5 +99,3 @@ def parse_feedback_result(feedback, exercise, submission, grading_instruction_id
         meta={}
     ))
     return result_feedbacks
-
-
