@@ -221,10 +221,10 @@ Expert Evaluation
 These experts evaluate how well the feedback aligns with the content of the submissions and predefined metrics such as accuracy, tone, and adaptability.
 The goal is to gather structured and reliable assessments to improve feedback quality or validate feedback generation methods.
 
-The playground provides two key Expert Evaluation views:
+The playground provides two key *Expert Evaluation* views:
 
-1. Researcher View: Enables researchers to configure the evaluation process, define metrics, and generate expert links.
-2. Expert View: Allows experts to review feedback and rate its quality based on the defined evaluation metrics.
+1. *Researcher View*: Enables researchers to configure the evaluation process, define metrics, and generate expert links.
+2. *Expert View*: Allows experts to review feedback and rate its quality based on the defined evaluation metrics.
 
 Researcher View
 ^^^^^^^^^^^^^^^
@@ -234,8 +234,8 @@ Researcher View is accessible from the playground below Evaluation Mode:
     :width: 850px
     :alt: Location of the Researcher View
 
-The researcher begins creating a new Expert Evaluation by selecting a new name and uploading exercises with submissions and feedback.
-Now the expert can define his own metrics such as actionability, accuracy and add a short and a long description.
+The researcher begins creating a new *Expert Evaluation* by selecting a new name and uploading exercises with submissions and feedback.
+Now, the expert can define his own metrics, such as actionability and accuracy, and add a short and a long description.
 Based on these metrics, experts will compare the different feedback types.
 
 .. figure:: ../images/playground/expert_evaluation/define_metrics.png
@@ -244,7 +244,7 @@ Based on these metrics, experts will compare the different feedback types.
 
 Afterwards, the researcher adds a link for each expert participating in the evaluation.
 This link should then be shared with the corresponding expert.
-After finishing the configuration, the researcher can define the experiment and start the Expert Evaluation.
+After finishing the configuration, the researcher can define the experiment and start the *Expert Evaluation*.
 
 .. figure:: ../images/playground/expert_evaluation/define_experiment.png
     :width: 850px
@@ -254,10 +254,10 @@ After finishing the configuration, the researcher can define the experiment and 
     Once the evaluation has started, the exercises and the metrics can no longer be changed!
     However, additional expert links can be created.
 
-Instead of uploading the exercises and defining the metrics separately, the researcher can also import an existing configuration at the top of the Researcher View.
+Instead of uploading the exercises and defining the metrics separately, the researcher can also import an existing configuration at the top of the *Researcher View*.
 
 After the evaluation has been started and the experts have begun to evaluate, the researcher can track each expert's progress by clicking the Update Progress button.
-Evaluation results can be exported at any time during the evaluation using the Download Results button.
+Evaluation results can be exported at any time during the evaluation using the *Download Results* button.
 
 .. figure:: ../images/playground/expert_evaluation/view_expert_evaluation_progress.png
     :width: 850px
@@ -272,10 +272,10 @@ The Side-by-Side tool is used for evaluation.
     :width: 850px
     :alt: Side-by-Side tool
 
-First time clicking on the link, the expert is greeted by a welcome screen, where the tutorial begins.
+Upon clicking the link for the first time, the expert is greeted by a welcome screen that introduces the tutorial.
 The following steps are shown and briefly described:
 
-The expert firstly reads the exercise details to get familiar with the exercise.
+The expert first reads the exercise details to get familiar with the exercise.
 The details include the problem statement, grading instructions, and a sample solution.
 
 .. raw:: html
@@ -300,7 +300,7 @@ The expert then evaluates the feedback using a 5-point Likert scale based on the
         Evaluate metrics
     </iframe>
 
-If the meaning of a metric is unclear, a more detailed explanation can be accessed by clicking the info icon or the Metric Details button.
+If the meaning of a metric is unclear, a more detailed explanation can be accessed by clicking the info icon or the *Metric Details* button.
 
 .. raw:: html
 
@@ -309,7 +309,7 @@ If the meaning of a metric is unclear, a more detailed explanation can be access
     </iframe>
 
 After evaluating all the different types of feedback, the expert can move on to the next submissions and repeat the process.
-When ready to take a break, the expert clicks on the Continue Later button which saves their progress.
+When ready to take a break, the expert clicks on the *Continue Later* button, which saves their progress.
 
 .. raw:: html
 
