@@ -3,7 +3,6 @@ from typing import Type, Union, List, Optional
 from langchain.base_language import BaseLanguageModel
 
 from llm_core.models.model_config import ModelConfig
-from athena.logger import logger
 
 DefaultModelConfig: Type[ModelConfig]
 MiniModelConfig: ModelConfig

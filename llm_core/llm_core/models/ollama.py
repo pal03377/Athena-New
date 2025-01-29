@@ -71,7 +71,7 @@ if os.environ.get('GPU_USER') and os.environ.get('GPU_PASSWORD') and os.environ.
                     return v
                 
                 def get_model(self) -> BaseLanguageModel:
-                    print("Getting Model: ", self.model_name.value)
+                    logger.info("Getting Model: ", self.model_name.value)
                     """Get the model from the configuration.
 
                     Returns:
@@ -110,7 +110,7 @@ if os.environ.get('GPU_USER') and os.environ.get('GPU_PASSWORD') and os.environ.
                 class Config:
                     title = 'Ollama'
     except Timeout:
-        print("Connection timed out. Skipping server connection step.")
+        logger.info("Connection timed out. Skipping gpu server connection step.")
     except RequestException as e:
-        print(f"Failed to connect to the server: {e}. Skipping this step.")
+        logger.info(f"Failed to connect to the gpu server: {e}. Skipping this step.")
         
