@@ -7,7 +7,6 @@ from module_text_llm.approach_config import ApproachConfig
 from module_text_llm.helpers.utils import add_sentence_numbers, get_index_range_from_line_range
 import asyncio
   
-# Placeholder for generate suggestions logic.
 async def generate_suggestions(exercise: Exercise, submission: Submission, config: ApproachConfig, debug: bool, is_graded: bool):
     submission_text = double_curly_braces(submission.text)
     model = config.model.get_model()  # type: ignore[attr-defined]
@@ -34,7 +33,7 @@ async def generate_suggestions(exercise: Exercise, submission: Submission, confi
             "is_graded": is_graded,
             "criteria_title": criteria.title
         }
-        if ("plagiarism" in criteria.title.lower()): # Exclude plagarism because the model cannot know and it hallucinates
+        if ("plagiarism" in criteria.title.lower()):  # Skip plagiarism criteria
             continue
         usage_count, system_prompt = get_system_prompt(idx,exercise, criteria)
         if (usage_count == 1):
@@ -49,14 +48,11 @@ async def generate_suggestions(exercise: Exercise, submission: Submission, confi
 
     results = await asyncio.gather(*tasks)
 
-    # Flatten the list of feedbacks
     for feedback_list in results:
         feedbacks += feedback_list
     return feedbacks
 
 async def process_criteria(processing_inputs):
-
-    # Call the predict_and_parse method
     result = await predict_and_parse(
         model=processing_inputs["model"], 
         chat_prompt=processing_inputs["chat_prompt"], 

@@ -12,10 +12,8 @@ Now you must assess the following student submission and respond in json. The st
 """
 
 def double_curly_braces(input_str):
-    # Curly braces are used as placeholders in the prompt, so we need to escape them if found in the text
     return input_str.replace("{", " ").replace("}", " ")
 
-# Prompts are generated at run time.
 def get_system_prompt(index,exericse,cirteria:GradingCriterion):
     system_prompt = """You are an AI Assistant TUTOR at a prestigious university tasked with assessing text submissions. You are tasked with assessing a submission from a student. The problem statement is:"""
     usage_count, formatted_criterion = format_divide_and_conquer_criteria(index,exericse,cirteria)
@@ -36,7 +34,7 @@ def format_divide_and_conquer_criteria(index,exercise, criteria: GradingCriterio
     # End General Instructions"""
     
     criteria_explanation_prompt += problem_statement
-    # Handle Arbitrarily often criteria, this is denoted by 0, CAREFUL WITH THIS ONE.
+    # Handle Arbitrarily often criteria, this is denoted by use count 0.
 
     criteria_explanation_prompt += f""" 
     You have to assess the submission based on the criteria with the title: "{criteria.title}". There are
@@ -72,9 +70,6 @@ def get_criteria_application(usage_counts):
     """ if usage_counts[0] != 1 else "You may apply this criteria only once and choose only a SINGLE assessment instruciton that best fits the submission!"
     return usaged_count_prompt
 
-# Output Object
-# Names have been redefined here, to be consistent with the prompt
-# Local LLMs do better with these names. GoatPT does not care and does everything!
 class FeedbackModel(BaseModel):
     """ A Feedback object consisting of the criteria title, the feedback text, a line_start and line_end to depict
     a reference to the text, creidts to depcit the credit amount given and an assessment_instruction_id to depict the assessment instruction ID used"""
