@@ -24,7 +24,7 @@ available_models: Dict[str, BaseLanguageModel] = {}
 if openai_available:
     openai.api_type = "openai"
     for model in openai.models.list():
-        if "gpt" in model.id:
+        if "gpt" in model.id and "audio" not in model.id and "realtime" not in model.id:
             available_models[OPENAI_PREFIX + model.id] = ChatOpenAI(model=model.id)
 
 # Load Azure OpenAI models
@@ -81,7 +81,7 @@ while lower values like 0.2 will make it more focused and deterministic.
 We generally recommend altering this or `top_p` but not both.\
 """)
 
-        top_p: float = Field(default=1, ge=0, le=1, description="""\
+        top_p: float = Field(default=0, ge=0, le=1, description="""\
 An alternative to sampling with temperature, called nucleus sampling, where the model considers the results of the tokens with top_p probability mass. \
 So 0.1 means only the tokens comprising the top 10% probability mass are considered.
 

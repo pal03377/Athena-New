@@ -67,6 +67,8 @@ async def generate_suggestions(exercise: Exercise, submission: Submission, confi
     )
 
     second_prompt_input = {
+        "problem_statement": exercise.problem_statement or "No problem statement.",
+        "grading_instructions": format_grading_instructions(exercise.grading_instructions, exercise.grading_criteria),
         "answer" : initial_result.dict(),
         "submission": add_sentence_numbers(submission.text)
 
