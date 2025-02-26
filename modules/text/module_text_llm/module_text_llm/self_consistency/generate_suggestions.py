@@ -11,7 +11,7 @@ from module_text_llm.approach_config import ApproachConfig
 async def generate_suggestions(exercise: Exercise, submission: Submission, 
                                config: ApproachConfig, debug: bool, is_graded: bool) -> List[Feedback]:
     # Common model configuration for all approaches.
-    model = config.model.get_model()  # type: ignore[attr-defined]
+    model = config.model  # type: ignore[attr-defined]
 
     # Define available approaches in a dictionary.
     approaches = {
