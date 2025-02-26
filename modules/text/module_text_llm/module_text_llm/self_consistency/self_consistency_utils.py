@@ -20,7 +20,7 @@ async def run_approach(exercise: Exercise, submission: Submission,
     try:
         return await gen_sug(exercise, submission, approach_config, debug, is_graded)
     except Exception as e:
-        logger.error(f"Error in approach {approach_config.__class__.__name__}: {e}")
+        logger.error("Error in approach %s: %s", approach_config.__class__.__name__, e)
         return []
 
 def aggregate_feedback(feedback_list: List[Feedback]) -> Dict:
@@ -56,5 +56,5 @@ def compute_scores(aggregated: Dict[str, Dict]) -> Dict[str, float]:
 
 def select_best_approach(scores: Dict[str, float]) -> Tuple[str, float]:
     """Select the approach with the highest score."""
-    best_key = max(scores, key=scores.get)
+    best_key = max(scores, key=lambda k: scores[k])
     return best_key, scores[best_key]

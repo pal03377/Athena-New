@@ -33,6 +33,5 @@ async def generate_suggestions(exercise: Exercise, submission: Submission,
     # Compute scores and select the best approach.
     scores = compute_scores(aggregated)
     best_key, best_value = select_best_approach(scores)
-    logger.info(f"Scores: {scores} | Best approach: {best_key}")
-
+    logger.info("Scores: %s | Best approach: %s", scores, best_key)
     return results.get(best_key, [])
