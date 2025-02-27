@@ -1,4 +1,4 @@
-from typing import List, get_args, TYPE_CHECKING
+from typing import List, get_args
 import asyncio
 
 from athena.text import Exercise, Submission, Feedback
@@ -10,11 +10,6 @@ from module_text_llm.self_consistency.self_consistency_utils import (
     select_best_approach,
 )
 from module_text_llm.approach_config import ApproachConfig
-
-if TYPE_CHECKING:
-    # These imports are only for type-checking and avoid top-level cyclic imports.
-    from module_text_llm.config import ApproachConfigUnion
-    from module_text_llm.self_consistency import SelfConsistencyConfig
 
 
 async def generate_suggestions(
