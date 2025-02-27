@@ -22,15 +22,9 @@ async def generate_suggestions(
     # Common model configuration for all approaches.
     model = config.model  # type: ignore[attr-defined]
 
-    # Local imports help break cyclic dependencies.
-    from module_text_llm.config import ApproachConfigUnion  # pylint: disable=import-outside-toplevel
-    from module_text_llm.self_consistency import SelfConsistencyConfig  # pylint: disable=import-outside-toplevel
-
-    # Use get_args() rather than __args__ to avoid mypy errors.
-    valid_approaches = [
-        approach for approach in get_args(ApproachConfigUnion)
-        if issubclass(approach, ApproachConfig)
-    ]
+    # Avoid cyclic imports.
+    from module_text_llm.config import ApproachConfigUnion  # pylint: disable=cyclic-import, import-outside-toplevel
+    from module_text_llm.self_consistency import SelfConsistencyConfig  # pylint: disable=cyclic-import, import-outside-toplevel
 
     approaches = {}
     for cls in get_args(ApproachConfigUnion):
