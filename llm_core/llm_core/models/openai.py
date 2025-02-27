@@ -24,7 +24,7 @@ available_models: Dict[str, BaseLanguageModel] = {}
 if openai_available:
     openai.api_type = "openai"
     for model in openai.models.list():
-        if "gpt" in model.id:
+        if ("gpt" in model.id) and "audio" not in model.id and "realtime" not in model.id:
             available_models[OPENAI_PREFIX + model.id] = ChatOpenAI(model=model.id)
 
 # Load Azure OpenAI models
@@ -67,7 +67,7 @@ if available_models:
 
         model_name: OpenAIModel = Field(default=default_openai_model, # type: ignore
                                         description="The name of the model to use.")
-        max_tokens: PositiveInt = Field(4000, description="""\
+        max_tokens: PositiveInt = Field(2000, description="""\
 The maximum number of [tokens](https://platform.openai.com/tokenizer) to generate in the chat completion.
 
 The total length of input tokens and generated tokens is limited by the model's context length. \
