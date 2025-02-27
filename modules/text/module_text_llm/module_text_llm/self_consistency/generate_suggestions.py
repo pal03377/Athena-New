@@ -1,11 +1,9 @@
 from typing import List
-from athena import emit_meta
 from athena.text import Exercise, Submission, Feedback
 from athena.logger import logger
-from module_text_llm.basic_approach import BasicApproachConfig
 from module_text_llm.self_consistency.self_consistency_utils import run_approach, aggregate_feedback, compute_scores, select_best_approach
 import asyncio
-
+from typing import get_args
 from module_text_llm.approach_config import ApproachConfig
 # Placeholder for generate suggestions logic.
 async def generate_suggestions(exercise: Exercise, submission: Submission, 
@@ -13,13 +11,19 @@ async def generate_suggestions(exercise: Exercise, submission: Submission,
     # Common model configuration for all approaches.
     model = config.model  # type: ignore[attr-defined]
 
-    # Define available approaches in a dictionary.
-    approaches = {
-        "basic": BasicApproachConfig(model=model),
-        "basic2": BasicApproachConfig(model=model),
-        "basic3": BasicApproachConfig(model=model)
-    }
+    # Have to import here to avoid circular imports.
+    from module_text_llm.config import ApproachConfigUnion
+    #pylint: disable=import-outside-toplevel
+    from module_text_llm.self_consistency import SelfConsistencyConfig
 
+    valid_approaches = [approach for approach in ApproachConfigUnion.__args__ if issubclass(approach, ApproachConfig)]
+    approaches = {}
+    for cls in get_args(ApproachConfigUnion):
+        if cls is SelfConsistencyConfig:
+            continue 
+        key = cls.__name__.lower()
+        approaches[key] = cls(model=model)
+ 
     # Run all approaches concurrently.
     tasks = {
         name: asyncio.create_task(run_approach(exercise, submission, approach, debug, is_graded))
